@@ -65,7 +65,7 @@ public class ResultWindow extends JFrame {
 		for (ExaminationHistory history : histories) {
 			panel.add (new PatientPanel(history));
 		}
-		setSize(new Dimension(PatientPanel.WIDTH+300, 1000));
+		setSize(new Dimension(PatientPanel.WIDTH+50, 1000));
 		setTitle("Similar patients");
 		setVisible(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
