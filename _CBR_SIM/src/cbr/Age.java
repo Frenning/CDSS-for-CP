@@ -36,14 +36,7 @@ public class Age
 			System.out.println("Fel: ageAtExamination är mindre än noll");
 			return 0;
 		}
-		Object sim = ageSimTableModel.getValueAt((int) ageAtExamination, age + 1); // Add
-																					// one
-																					// because
-																					// the
-																					// first
-																					// column
-																					// contains
-																					// headlines/descriptions
+		Object sim = ageSimTableModel.getValueAt((int) ageAtExamination, age + 1); // Add one because the first column contains headlines/descriptions
 		return (double) sim;
 		/*
 		 * double ageDiff = Math.abs(ageAtExamination - age); double normalized
