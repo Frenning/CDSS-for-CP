@@ -8,84 +8,113 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
-public class AgeSimTableModel  extends AbstractTableModel  {
+public class AgeSimTableModel extends AbstractTableModel
+{
 	Vector<String> columnNames = new Vector<String>();
 	Vector<Vector<Object>> data = new Vector<Vector<Object>>();
-	
-	public AgeSimTableModel() {
+
+	public AgeSimTableModel()
+	{
 		BufferedReader reader = null;
-		try {
+		try
+		{
 			reader = new BufferedReader(new FileReader("age_similarities.csv"));
 			String line;
 			String[] cells;
 			Vector<Object> vector;
-			while((line = reader.readLine()) != null) {
+			while ((line = reader.readLine()) != null)
+			{
 				cells = line.split(",");
-				if (columnNames.size() == 0) {
-					for (int i=0; i<cells.length; i++) {
+				if (columnNames.size() == 0)
+				{
+					for (int i = 0; i < cells.length; i++)
+					{
 						columnNames.add(cells[i].trim());
 					}
 				}
-				else {
+				else
+				{
 					vector = new Vector<Object>();
 					vector.add(cells[0].trim());
-					for (int i=1; i<cells.length; i++) {
+					for (int i = 1; i < cells.length; i++)
+					{
 						vector.add(Double.parseDouble(cells[i]));
 					}
-					data.add(vector);						
+					data.add(vector);
 				}
 			}
 		}
-		catch (Exception e) {
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
-	public int getRowCount() {
+	public int getRowCount()
+	{
 		return data.size();
 	}
+
 	@Override
-	public int getColumnCount() {
+	public int getColumnCount()
+	{
 		return columnNames.size();
 	}
+
 	@Override
-	public Object getValueAt(int rowIndex, int columnIndex) {
+	public Object getValueAt(int rowIndex, int columnIndex)
+	{
 		return data.get(rowIndex).get(columnIndex);
 	}
+
 	@Override
-	public String getColumnName(int columnIndex) {
-	    return columnNames.get(columnIndex);
+	public String getColumnName(int columnIndex)
+	{
+		return columnNames.get(columnIndex);
 	}
+
 	@Override
-	public Class getColumnClass(int c) {
+	public Class getColumnClass(int c)
+	{
 		return getValueAt(0, c).getClass();
 	}
+
 	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
+	public boolean isCellEditable(int rowIndex, int columnIndex)
+	{
 		return columnIndex > 0;
 	}
+
 	@Override
-	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+	public void setValueAt(Object value, int rowIndex, int columnIndex)
+	{
 		double converted = (double) value;
-		if (converted >= 0 && converted <= 1) {
+		if (converted >= 0 && converted <= 1)
+		{
 			data.get(rowIndex).set(columnIndex, value);
-			fireTableCellUpdated(rowIndex, columnIndex);				
+			fireTableCellUpdated(rowIndex, columnIndex);
 		}
-		else {
+		else
+		{
 			System.out.println("Inkorrekt värde: " + converted);
-		}	
+		}
 	}
-	
-	public void writeFile() {
-		try {
+
+	public void writeFile()
+	{
+		try
+		{
 			BufferedWriter writer = new BufferedWriter(new FileWriter("age_similarities.csv"));
-			for (String columnName : columnNames) {
+			for (String columnName : columnNames)
+			{
 				writer.write(columnName + ",");
 			}
 			writer.newLine();
-			for (Vector<Object> vector : data) {
-				for (Object obj : vector) {
+			for (Vector<Object> vector : data)
+			{
+				for (Object obj : vector)
+				{
 					String x = obj.toString() + ",";
 					writer.write(x);
 				}
@@ -93,10 +122,10 @@ public class AgeSimTableModel  extends AbstractTableModel  {
 			}
 			writer.flush();
 		}
-		catch (Exception e) {
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
-
 
 }

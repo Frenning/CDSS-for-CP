@@ -1,5 +1,6 @@
 package similarity;
 
-public class FunctionAssym {
+public class FunctionAssym
+{
 
 }

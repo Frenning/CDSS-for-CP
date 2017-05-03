@@ -13,7 +13,8 @@ import javax.swing.border.EtchedBorder;
 
 import cbr.ExaminationHistory;
 
-public class PatientPanel extends JPanel {
+public class PatientPanel extends JPanel
+{
 	private static int HEIGHT = HistoryPanel.HEIGHT + HistoryPanel.PADDING_Y + PatientValuePanel.HEIGHT + 50;
 	public static int WIDTH = 1800;
 	private ExaminationHistory history;
@@ -23,8 +24,9 @@ public class PatientPanel extends JPanel {
 	private JScrollPane scroll;
 	private JLabel treatmentLabel;
 	private String treatmentLabelContent = "";
-	
-	public PatientPanel(ExaminationHistory history) {
+
+	public PatientPanel(ExaminationHistory history)
+	{
 		this.history = history;
 		historyPanel = new HistoryPanel(this, history);
 		setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -38,15 +40,17 @@ public class PatientPanel extends JPanel {
 		add(historyPanel);
 		treatmentLabel = this.treatmentLabel();
 		treatmentInfoPanel = new JPanel();
-		scroll = new JScrollPane(treatmentInfoPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll = new JScrollPane(treatmentInfoPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		add(scroll);
-		scroll.setPreferredSize(new Dimension(500, HistoryPanel.HEIGHT+HistoryPanel.PADDING_Y));
+		scroll.setPreferredSize(new Dimension(500, HistoryPanel.HEIGHT + HistoryPanel.PADDING_Y));
 		treatmentInfoPanel.setBackground(Color.white);
 		treatmentInfoPanel.add(treatmentLabel);
 		scroll.setVisible(false);
 	}
-	
-	private JLabel patientLabel() {
+
+	private JLabel patientLabel()
+	{
 		JLabel patient = new JLabel("Patient " + history.getChild());
 		patient.setFont(new Font("Serif", Font.BOLD, 20));
 		patient.setBackground(Color.white);
@@ -56,34 +60,35 @@ public class PatientPanel extends JPanel {
 		patient.setPreferredSize(new Dimension(WIDTH, 50));
 		return patient;
 	}
-	
-	private JLabel treatmentLabel() {
+
+	private JLabel treatmentLabel()
+	{
 		JLabel label = new JLabel();
 		label.setVerticalAlignment(JLabel.TOP);
-		label.setPreferredSize(new Dimension(500, HistoryPanel.HEIGHT+HistoryPanel.PADDING_Y+100));
+		label.setPreferredSize(new Dimension(500, HistoryPanel.HEIGHT + HistoryPanel.PADDING_Y + 100));
 		return label;
 	}
-	
-	
-	public void alertActivated(int i) {
+
+	public void alertActivated(int i)
+	{
 		historyPanel.setDisplay(i, true);
 	}
-	
-	public void alertDisActivated(int i) {
+
+	public void alertDisActivated(int i)
+	{
 		historyPanel.setDisplay(i, false);
 	}
-	
-	public void removeTreatmentLabel() {
+
+	public void removeTreatmentLabel()
+	{
 		treatmentLabelContent = "";
 	}
-	
-	public void updateTreatmentLabel(String info) {
+
+	public void updateTreatmentLabel(String info)
+	{
 		treatmentLabelContent += info + "<br/>";
-		treatmentLabel.setText( "<html>" + treatmentLabelContent + "</html>" );
+		treatmentLabel.setText("<html>" + treatmentLabelContent + "</html>");
 		scroll.setVisible(true);
 	}
-	
 
-
-	
 }
