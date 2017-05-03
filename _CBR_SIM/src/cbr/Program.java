@@ -209,7 +209,7 @@ public class Program {
 		try {
 			Properties properties = new Properties();
 			properties.put("user", "root");
-			properties.put("password", "multilate94");
+			properties.put("password", "123");
 			int port = 3306;	// Default?
 			String server = "localhost"; // ?
 			String database = "anna_test";
