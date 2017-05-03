@@ -1,0 +1,6 @@
+plantar_right,Plantarflexorer höger,0.125,0,4,1
+plantar_left,Plantarflexorer vänster,0.125,0,4,1
+dorsal_fle_right,Fotled: dorsalflexion vid flekterat knä - höger (grader),0.125,-45,130,24
+dorsal_fle_left,Fotled: dorsalflexion vid flekterat knä - vänster (grader),0.125,-45,125,24
+dorsal_ext_right,Fotled: dorsalflexion vid extenderat knä - höger (grader),0.125,-70,115,14
+dorsal_ext_left,Fotled: dorsalflexion vid extenderat knä - vänster (grader),0.125,-70,115,14
