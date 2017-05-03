@@ -26,65 +26,72 @@ import cbr.ValueData;
 import graphics.Window.MenuListener;
 import graphics.Window.SimGraphWindow;
 
-public class ResultWindow extends JFrame {
-	private ValueData data;	// To be used to show similarity metrics
+public class ResultWindow extends JFrame
+{
+	private ValueData data; // To be used to show similarity metrics
 	private Vector<ExaminationHistory> histories;
 	private JPanel panel = new JPanel();
-	private JScrollPane scroll = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	private JScrollPane scroll = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu menu = new JMenu("Arkiv");
 	private JMenuItem item = new JMenuItem("Visa similarity metrics");
 
-	public ResultWindow(Vector<ExaminationHistory> histories, ExaminationHistory patientHistory, ValueData data) {
+	public ResultWindow(Vector<ExaminationHistory> histories, ExaminationHistory patientHistory, ValueData data)
+	{
 		menu.add(item);
 		menuBar.add(menu);
 		setJMenuBar(menuBar);
-		menu.setMnemonic(KeyEvent.VK_A);	
-		item.setMnemonic(KeyEvent.VK_S);	
+		menu.setMnemonic(KeyEvent.VK_A);
+		item.setMnemonic(KeyEvent.VK_S);
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		item.addActionListener(new MenuListener());
-		
+
 		this.data = data;
 		this.histories = histories;
-		setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS) );
-		
+		setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
+
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-		topPanel.setPreferredSize(new Dimension(PatientPanel.WIDTH+300,600));
+		topPanel.setPreferredSize(new Dimension(PatientPanel.WIDTH + 300, 600));
 		add(topPanel);
-		topPanel.add(descriptionPanel());	// A panel in the top that is not scrolled
+		topPanel.add(descriptionPanel()); // A panel in the top that is not
+											// scrolled
 		PatientPanel pp = new PatientPanel(patientHistory);
-		pp.setPreferredSize(new Dimension(500,1000));
+		pp.setPreferredSize(new Dimension(500, 1000));
 		topPanel.add(pp);
-		
-		add(scroll);	// The rest of the content is scrolled
-		scroll.setPreferredSize(new Dimension(PatientPanel.WIDTH+300,700));
-		
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS) );
+
+		add(scroll); // The rest of the content is scrolled
+		scroll.setPreferredSize(new Dimension(PatientPanel.WIDTH + 300, 700));
+
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setBackground(Color.white);
-		for (ExaminationHistory history : histories) {
-			panel.add (new PatientPanel(history));
+		for (ExaminationHistory history : histories)
+		{
+			panel.add(new PatientPanel(history));
 		}
-		setSize(new Dimension(PatientPanel.WIDTH+50, 1000));
+		setSize(new Dimension(PatientPanel.WIDTH + 50, 1000));
 		setTitle("Similar patients");
 		setVisible(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
-	
+
 	// A grey panel with rectangles with the description of the values
-	private JPanel descriptionPanel() {
+	private JPanel descriptionPanel()
+	{
 		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS) );
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
 		topPanel.setPreferredSize(new Dimension(1300, 90));
 		JPanel pvp = new PatientValuePanel(MetaHandler.getDescriptionsExtended(), false);
-		pvp.setBackground(new Color(200,200,200));
+		pvp.setBackground(new Color(200, 200, 200));
 		topPanel.add(pvp);
 		topPanel.setOpaque(true);
 		return topPanel;
 	}
-	
+
 	// A label with the text "Din patient"
-	private JLabel yourPatient() {
+	private JLabel yourPatient()
+	{
 		JLabel yourPatient = new JLabel("Din patient");
 		yourPatient.setFont(new Font("Serif", Font.BOLD, 20));
 		yourPatient.setBackground(Color.white);
@@ -93,13 +100,14 @@ public class ResultWindow extends JFrame {
 		yourPatient.setHorizontalTextPosition(JLabel.LEFT);
 		return yourPatient;
 	}
-	
-	class MenuListener implements ActionListener {
+
+	class MenuListener implements ActionListener
+	{
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e)
+		{
 			new SimilarityWindow(histories, data);
 		}
 	}
-	
 
 }

@@ -23,7 +23,8 @@ import cbr.PanelData;
 import cbr.Program;
 import cbr.ValueData;
 
-public class Window extends JFrame {
+public class Window extends JFrame
+{
 	private Program program;
 	private SliderPanel[] panels = new SliderPanel[MetaHandler.getNrOfColumns()];
 	private SliderPanel agePanel = new SliderPanel(new PanelData("birth_year", "Ålder", Age.MIN, Age.MAX));
@@ -33,15 +34,16 @@ public class Window extends JFrame {
 	private JMenu menu = new JMenu("Arkiv");
 	private JMenuItem item = new JMenuItem("Visa/ändra similarity ålder");
 	private JMenuItem itemSim = new JMenuItem("Visa similarity övriga");
-	
-	public Window(Program program) {
+
+	public Window(Program program)
+	{
 		this.program = program;
 		menu.add(item);
 		menu.add(itemSim);
 		menuBar.add(menu);
 		setJMenuBar(menuBar);
-		menu.setMnemonic(KeyEvent.VK_A);	
-		item.setMnemonic(KeyEvent.VK_S);	
+		menu.setMnemonic(KeyEvent.VK_A);
+		item.setMnemonic(KeyEvent.VK_S);
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		item.addActionListener(new MenuListener());
 		itemSim.setMnemonic(KeyEvent.VK_O);
@@ -52,7 +54,8 @@ public class Window extends JFrame {
 		buttonFetch.addActionListener(new ButtonListenerFetch());
 		add(agePanel);
 		PanelData[] data = MetaHandler.getPanelData();
-		for (int i=0; i<data.length; i++) {
+		for (int i = 0; i < data.length; i++)
+		{
 			SliderPanel panel = new SliderPanel(data[i]);
 			panels[i] = panel;
 			add(panel);
@@ -64,52 +67,65 @@ public class Window extends JFrame {
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-	
-	class ButtonListenerShow implements ActionListener {
+
+	class ButtonListenerShow implements ActionListener
+	{
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e)
+		{
 			int[] values = new int[panels.length];
-			for (int i=0; i<panels.length; i++) {
+			for (int i = 0; i < panels.length; i++)
+			{
 				values[i] = panels[i].getSliderValue();
 			}
 			int age = agePanel.getSliderValue();
 			program.fetchSimilar(new ValueData(values, age));
 		}
 	}
-	
-	class MenuListener implements ActionListener {
+
+	class MenuListener implements ActionListener
+	{
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (e.getSource() == item) {
-				Age.showAgeSimWindow();				
+		public void actionPerformed(ActionEvent e)
+		{
+			if (e.getSource() == item)
+			{
+				Age.showAgeSimWindow();
 			}
-			else if (e.getSource() == itemSim) {
+			else if (e.getSource() == itemSim)
+			{
 				new SimGraphWindow(MetaHandler.getSimCalculatorGraphs());
 			}
 		}
 	}
-	
-	class ButtonListenerFetch implements ActionListener {
+
+	class ButtonListenerFetch implements ActionListener
+	{
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e)
+		{
 			program.showSimilarWindow();
 		}
 	}
-	
-	class SimGraphWindow extends JFrame {
-		public SimGraphWindow(JPanel[] panels) {
+
+	class SimGraphWindow extends JFrame
+	{
+		public SimGraphWindow(JPanel[] panels)
+		{
 			JPanel background = new JPanel();
 			add(background);
-			background.setLayout(new BoxLayout(background, BoxLayout.Y_AXIS) );
-			JScrollPane scroll = new JScrollPane(background, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			background.setLayout(new BoxLayout(background, BoxLayout.Y_AXIS));
+			JScrollPane scroll = new JScrollPane(background, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			add(scroll);
 			String[] descriptions = MetaHandler.getDescriptions();
-			for (int i=0; i<panels.length; i++) {
+			for (int i = 0; i < panels.length; i++)
+			{
 				background.add(panels[i]);
 				panels[i].setPreferredSize(new Dimension(1000, 540));
 				background.add(new JLabel(descriptions[i]));
 			}
-			setSize(1200,1000);
+			setSize(1200, 1000);
 			setTitle("Similarity - grafer");
 			setVisible(true);
 			setDefaultCloseOperation(DISPOSE_ON_CLOSE);

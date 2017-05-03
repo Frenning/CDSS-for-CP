@@ -10,7 +10,8 @@ import javax.swing.JPanel;
 import similarity.SimCalculator;
 import similarity.SimilarityHistory;
 
-public class MetaHandler {
+public class MetaHandler
+{
 	private static int nrOfColumns;
 	private static String[] columnNames;
 	private static String[] descriptions;
@@ -18,18 +19,22 @@ public class MetaHandler {
 	private static PanelData[] data;
 	private static int[] averages;
 	private static SimCalculator[] calculators;
-	
-	public static void init() {
+
+	public static void init()
+	{
 		BufferedReader reader = null;
 		Vector<String> lines = new Vector<String>();
 		String line;
-		try {
+		try
+		{
 			reader = new BufferedReader(new FileReader("meta.csv"));
-			while((line = reader.readLine()) != null) {
+			while ((line = reader.readLine()) != null)
+			{
 				lines.add(line);
 			}
 		}
-		catch (Exception e) {
+		catch (Exception e)
+		{
 			System.out.println(e);
 		}
 		nrOfColumns = lines.size();
@@ -39,7 +44,8 @@ public class MetaHandler {
 		averages = new int[nrOfColumns];
 		data = new PanelData[nrOfColumns];
 		calculators = new SimCalculator[nrOfColumns];
-		for (int i=0; i<nrOfColumns; i++) {
+		for (int i = 0; i < nrOfColumns; i++)
+		{
 			String[] cells = lines.get(i).split(",");
 			String columnName = cells[0];
 			String description = cells[1];
@@ -54,98 +60,119 @@ public class MetaHandler {
 			columnNames[i] = columnName;
 			descriptions[i] = description;
 		}
-		
+
 		// Reading values for similarity calculations
 		lines = new Vector<String>();
-		try {
+		try
+		{
 			reader = new BufferedReader(new FileReader("similarities.csv"));
-			while((line = reader.readLine()) != null) {
+			while ((line = reader.readLine()) != null)
+			{
 				lines.add(line);
 			}
 		}
-		catch (Exception e) {
+		catch (Exception e)
+		{
 			System.out.println(e);
 		}
-		if (lines.size() != nrOfColumns) {
-			System.out.println("Problem får få eller många rader i similarites.csv !!!");	// Todo kasta undantag
+		if (lines.size() != nrOfColumns)
+		{
+			System.out.println("Problem får få eller många rader i similarites.csv !!!"); // Todo kasta undantag
 		}
-		else {
-			for (int i=0; i<nrOfColumns; i++) {
+		else
+		{
+			for (int i = 0; i < nrOfColumns; i++)
+			{
 				String[] breakpoints = lines.get(i).split(",");
 				calculators[i].addBreakpoints(breakpoints);
 			}
 		}
 	}
-	
-	public static String[] getColumnNames() {
+
+	public static String[] getColumnNames()
+	{
 		return columnNames;
 	}
-	
-	public static String getColumnsName(int index) {
+
+	public static String getColumnsName(int index)
+	{
 		return columnNames[index];
 	}
-	
-	public static String getColumnNamesCommaSeparated() {
+
+	public static String getColumnNamesCommaSeparated()
+	{
 		String string = "";
-		for (String column : MetaHandler.getColumnNames()) {
+		for (String column : MetaHandler.getColumnNames())
+		{
 			string += column + ", ";
 		}
 		return string;
 	}
-	
-	public static String[] getDescriptions() {
+
+	public static String[] getDescriptions()
+	{
 		return descriptions;
 	}
-	
-	public static String[] getDescriptionsExtended() {
-		String[] desc = new String[descriptions.length+1];
+
+	public static String[] getDescriptionsExtended()
+	{
+		String[] desc = new String[descriptions.length + 1];
 		desc[0] = "Ålder";
-		for (int i=0; i<descriptions.length; i++) {
-			desc[i+1] = descriptions[i];
+		for (int i = 0; i < descriptions.length; i++)
+		{
+			desc[i + 1] = descriptions[i];
 		}
 		return desc;
 	}
-	
-	public static int getNrOfColumns() {
+
+	public static int getNrOfColumns()
+	{
 		return nrOfColumns;
 	}
-	
-	public static PanelData[] getPanelData() {
+
+	public static PanelData[] getPanelData()
+	{
 		return data;
 	}
-	
-	public static double getNormaizedDiff(int index, int diff) {
+
+	public static double getNormaizedDiff(int index, int diff)
+	{
 		return data[index].getNormaizedDiff(diff);
 	}
-	
-	public static double[] getWeighs() {
+
+	public static double[] getWeighs()
+	{
 		return weights;
 	}
-	
-	public static double getWeight(int index) {
+
+	public static double getWeight(int index)
+	{
 		return weights[index];
 	}
-	
-	public static int getAverage(int index) {
+
+	public static int getAverage(int index)
+	{
 		return averages[index];
 	}
-	
-	public static double calculateWeight(int index, int current, int other) {
+
+	public static double calculateWeight(int index, int current, int other)
+	{
 		return calculators[index].getWeight(current, other);
 	}
-	
-	public static void showSimCalculatorGraph(int index, SimilarityHistory history, String patientName) {
+
+	public static void showSimCalculatorGraph(int index, SimilarityHistory history, String patientName)
+	{
 		calculators[index].showWindow(history, patientName);
 	}
-	
-	public static JPanel[] getSimCalculatorGraphs() {
+
+	public static JPanel[] getSimCalculatorGraphs()
+	{
 		JPanel[] panels = new JPanel[calculators.length];
-		for (int i=0; i<panels.length; i++) {
+		for (int i = 0; i < panels.length; i++)
+		{
 			panels[i] = calculators[i].getPanel();
 		}
 		return panels;
 	}
-	
-	
 
 }

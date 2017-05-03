@@ -1,16 +1,17 @@
 package examination;
 
-public class OrthosisFunction extends Orthosis {
+public class OrthosisFunction extends Orthosis
+{
 	private boolean goalGait;
 	private boolean goalBalance;
 	private boolean goalExercise;
 	private String goalGaitAchieved;
 	private String goalBalanceAchieved;
 	private String goalExercieAchieved;
-	
-	public OrthosisFunction(int id, String type, int right, int left, 
-			int goalGait, int goalBalance, int goalExercise, 
-			String goalGaitAchieved, String goalBalanceAchieved, String goalExercieAchieved) {
+
+	public OrthosisFunction(int id, String type, int right, int left, int goalGait, int goalBalance, int goalExercise,
+			String goalGaitAchieved, String goalBalanceAchieved, String goalExercieAchieved)
+	{
 		this.description = "funktion";
 		this.id = id;
 		this.type = type;
@@ -22,10 +23,6 @@ public class OrthosisFunction extends Orthosis {
 		this.goalGaitAchieved = goalGaitAchieved;
 		this.goalBalanceAchieved = goalBalanceAchieved;
 		this.goalExercieAchieved = goalExercieAchieved;
-	}	
-	
-	
-	
-	
+	}
 
 }
