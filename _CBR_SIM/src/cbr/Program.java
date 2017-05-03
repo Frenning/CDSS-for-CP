@@ -198,7 +198,7 @@ public class Program
 	// values
 	// Returns a list with the examinations that are most similar
 	// Todo filtrera bort dem där åldern är fel
-	// testa sync
+	// pusha en kommentar
 	private Vector<Similarity> fetchMostSimilar(ValueData data, String query)
 	{
 		int[] values = data.getSliderValues();
