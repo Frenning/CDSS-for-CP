@@ -9,7 +9,6 @@ import java.util.Vector;
 
 import cbr.Dorsal;
 import cbr.MetaHandler;
-import cbr.ValueData;
 
 public class Examination
 {
@@ -43,13 +42,12 @@ public class Examination
 		}
 	}
 
-	public Examination(ValueData data)
+	public Examination(int[] values, int age)
 	{
-		int[] values = data.getSliderValues();
 		this.plantar[0] = values[0];
 		this.plantar[1] = values[1];
 		this.dorsal = new Dorsal(values[2], values[3], values[4], values[5]);
-		this.ageAtExamination = data.getAge();
+		this.ageAtExamination = age;
 		this.date = new Date();
 	}
 

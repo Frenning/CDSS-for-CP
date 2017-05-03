@@ -44,7 +44,9 @@ public class Age
 		 * return normalized;
 		 */
 	}
-
+	
+	
+	//getAgeAtExamination diffToDouble takes exam date and sub birthday and then converts time to years	
 	public static double getAgeAtExamination(int birthYear, String examinationDate)
 	{
 		return Examination.ageDiffToDouble(Examination.sqlStringToDate(examinationDate),
@@ -75,7 +77,7 @@ public class Age
 			item.addActionListener(new SaveListener());
 			menu.setMnemonic(KeyEvent.VK_A);
 			item.setMnemonic(KeyEvent.VK_S);
-			item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+			item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK)); //hotkey
 			JTable table = new JTable(ageSimTableModel);
 			for (int i = 0; i < ageSimTableModel.getColumnCount(); i++)
 			{

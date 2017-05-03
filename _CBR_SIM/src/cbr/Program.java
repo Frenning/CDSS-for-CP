@@ -35,24 +35,24 @@ public class Program
 		new Window(this);
 	}
 
-	public void fetchSimilar(ValueData data)
+	public void fetchSimilar(int[] values, int age)
 	{
 		long start = System.nanoTime();
 		System.out.println(System.nanoTime());
-		ExaminationHistory currentPatientHistory = new ExaminationHistory(0, 2016 - data.getAge(), 0);
-		currentPatientHistory.addExamination(new Examination(data));
-		this.fetchSimilar(data, currentPatientHistory);
+		ExaminationHistory currentPatientHistory = new ExaminationHistory(0, 2016 - age, 0);
+		currentPatientHistory.addExamination(new Examination(values, age));
+		this.fetchSimilar(values, age, currentPatientHistory);
 		long timing = System.nanoTime() - start;
 		timing /= 1000;
 		System.out.println(timing + " millisekunder");
 	}
 
-	public void fetchSimilar(ValueData data, ExaminationHistory currentPatientHistory)
+	public void fetchSimilar(int[] values, int age, ExaminationHistory currentPatientHistory)
 	{
 		String query = "select " + MetaHandler.getColumnNamesCommaSeparated();
-		Vector<Similarity> similar = this.fetchMostSimilar(data, query);
+		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query);
 		Vector<ExaminationHistory> histories = this.getDetailedInfo(similar);
-		new ResultWindow(histories, currentPatientHistory, data);
+		new ResultWindow(histories, currentPatientHistory, values, age);
 	}
 
 	private ExaminationHistory getChildsExaminationsHistory(int childId)
@@ -199,13 +199,14 @@ public class Program
 	// Returns a list with the examinations that are most similar
 	// Todo filtrera bort dem där åldern är fel
 	// pusha en kommentar
-	private Vector<Similarity> fetchMostSimilar(ValueData data, String query)
+	private Vector<Similarity> fetchMostSimilar(int[] values, int age, String query)
 	{
-		int[] values = data.getSliderValues();
+		//getNrOfCol är lines i meta.csv
+		values = new int[MetaHandler.getNrOfColumns()];
 		Vector<Similarity> similarities = new Vector<Similarity>();
 		query += "child, birth_year, examination.date from child, examination where examination.child = child.id";
 		ResultSet result = this.fetchResult(query.toString());
-		int age = data.getAge();
+		
 		try
 		{
 			int nrOfColumns = MetaHandler.getNrOfColumns();
@@ -376,8 +377,7 @@ public class Program
 			Date examinationDate = Examination.sqlStringToDate(result.getString(nrOfColumns + 1));
 			Date birthDate = Examination.birthYearToDate(result.getInt(nrOfColumns + 2));
 			double ageAtExamination = Examination.ageDiffToDouble(examinationDate, birthDate);
-			ValueData valueData = new ValueData(values, (int) ageAtExamination);
-			this.fetchSimilar(valueData, this.getChildsExaminationsHistory(child.getId()));
+			this.fetchSimilar(values, (int) ageAtExamination, this.getChildsExaminationsHistory(child.getId()));
 		}
 		catch (Exception e)
 		{

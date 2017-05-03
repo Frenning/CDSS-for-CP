@@ -22,13 +22,13 @@ import javax.swing.KeyStroke;
 import cbr.Age;
 import cbr.ExaminationHistory;
 import cbr.MetaHandler;
-import cbr.ValueData;
 import graphics.Window.MenuListener;
 import graphics.Window.SimGraphWindow;
 
 public class ResultWindow extends JFrame
 {
-	private ValueData data; // To be used to show similarity metrics
+	private int[] values;
+	private int age;
 	private Vector<ExaminationHistory> histories;
 	private JPanel panel = new JPanel();
 	private JScrollPane scroll = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -37,7 +37,7 @@ public class ResultWindow extends JFrame
 	private JMenu menu = new JMenu("Arkiv");
 	private JMenuItem item = new JMenuItem("Visa similarity metrics");
 
-	public ResultWindow(Vector<ExaminationHistory> histories, ExaminationHistory patientHistory, ValueData data)
+	public ResultWindow(Vector<ExaminationHistory> histories, ExaminationHistory patientHistory, int[] values, int age)
 	{
 		menu.add(item);
 		menuBar.add(menu);
@@ -47,7 +47,8 @@ public class ResultWindow extends JFrame
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		item.addActionListener(new MenuListener());
 
-		this.data = data;
+		this.values = values;
+		this.age = age;
 		this.histories = histories;
 		setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 
@@ -106,7 +107,7 @@ public class ResultWindow extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			new SimilarityWindow(histories, data);
+			new SimilarityWindow(histories, values, age);
 		}
 	}
 

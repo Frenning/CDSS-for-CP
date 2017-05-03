@@ -21,7 +21,6 @@ import cbr.Age;
 import cbr.MetaHandler;
 import cbr.PanelData;
 import cbr.Program;
-import cbr.ValueData;
 
 public class Window extends JFrame
 {
@@ -79,7 +78,7 @@ public class Window extends JFrame
 				values[i] = panels[i].getSliderValue();
 			}
 			int age = agePanel.getSliderValue();
-			program.fetchSimilar(new ValueData(values, age));
+			program.fetchSimilar(values, age);
 		}
 	}
 

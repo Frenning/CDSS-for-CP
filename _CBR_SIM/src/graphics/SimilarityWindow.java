@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
+import java.util.Arrays;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -16,7 +17,6 @@ import javax.swing.border.EtchedBorder;
 import cbr.Age;
 import cbr.ExaminationHistory;
 import cbr.MetaHandler;
-import cbr.ValueData;
 
 public class SimilarityWindow extends JFrame
 {
@@ -29,7 +29,7 @@ public class SimilarityWindow extends JFrame
 	public static int WIDTH = 100;
 	public static int HEIGHT = 50;
 
-	public SimilarityWindow(Vector<ExaminationHistory> histories, ValueData currentPatientData)
+	public SimilarityWindow(Vector<ExaminationHistory> histories, int[] values, int age)
 	{
 		int nrOfColumns = MetaHandler.getNrOfColumns() + 3;
 
@@ -61,7 +61,14 @@ public class SimilarityWindow extends JFrame
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		currentPatientValuesPanel.add(label);
-		for (String data : currentPatientData.getValues())
+		//convert int to string array
+		String[] svalues = new String[values.length];
+		int i = 0;
+	    while (i < values.length) {
+	    	svalues[i] = String.valueOf(values[i++]);
+	    }
+
+		for (String data : svalues)
 		{
 			label = new JLabel(data);
 			label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
