@@ -63,7 +63,7 @@ public class Window extends JFrame
 		}
 		add(button);
 		button.addActionListener(new ButtonListenerShow());
-		setSize(new Dimension(800, 750));
+		setSize(new Dimension(800, 850));
 		setTitle("Decision support - Din patient");
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
