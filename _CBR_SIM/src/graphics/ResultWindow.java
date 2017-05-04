@@ -37,7 +37,7 @@ public class ResultWindow extends JFrame
 	private JMenu menu = new JMenu("Arkiv");
 	private JMenuItem item = new JMenuItem("Visa similarity metrics");
 
-	public ResultWindow(Vector<ExaminationHistory> histories, ExaminationHistory patientHistory, int[] values, int age)
+	public ResultWindow(Vector<ExaminationHistory> histories, ExaminationHistory patientHistory, int[] values, int age, int GMFCS_currentPatient)
 	{
 		menu.add(item);
 		menuBar.add(menu);
@@ -54,11 +54,11 @@ public class ResultWindow extends JFrame
 
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-		topPanel.setPreferredSize(new Dimension(PatientPanel.WIDTH + 300, 600));
+		topPanel.setPreferredSize(new Dimension(PatientPanel.WIDTH + 300, 800));
 		add(topPanel);
 		topPanel.add(descriptionPanel()); // A panel in the top that is not
 											// scrolled
-		PatientPanel pp = new PatientPanel(patientHistory);
+		PatientPanel pp = new PatientPanel(patientHistory, GMFCS_currentPatient);
 		pp.setPreferredSize(new Dimension(500, 1000));
 		topPanel.add(pp);
 

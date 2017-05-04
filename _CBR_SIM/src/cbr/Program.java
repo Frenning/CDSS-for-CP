@@ -16,7 +16,7 @@ import examination.Orthosis;
 import examination.OrthosisContracture;
 import examination.OrthosisFunction;
 import examination.Treatment;
-import graphics.FetchSimilarWindow;
+import graphics.ExistingPatientsWindow;
 import graphics.ResultWindow;
 import graphics.Window;
 import similarity.SimilarityHistory;
@@ -35,24 +35,24 @@ public class Program
 		new Window(this);
 	}
 
-	public void fetchSimilar(int[] values, int age)
+	public void fetchSimilar(int[] values, int age, int GMFCS)
 	{
 		long start = System.nanoTime();
 		System.out.println(System.nanoTime());
 		ExaminationHistory currentPatientHistory = new ExaminationHistory(0, 2016 - age, 0);
 		currentPatientHistory.addExamination(new Examination(values, age));
-		this.fetchSimilar(values, age, currentPatientHistory);
+		this.fetchSimilar(values, age, currentPatientHistory, GMFCS);
 		long timing = System.nanoTime() - start;
 		timing /= 1000;
 		System.out.println(timing + " millisekunder");
 	}
 
-	public void fetchSimilar(int[] values, int age, ExaminationHistory currentPatientHistory)
+	public void fetchSimilar(int[] values, int age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient)
 	{
 		String query = "select " + MetaHandler.getColumnNamesCommaSeparated();
-		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query);
+		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient);
 		Vector<ExaminationHistory> histories = this.getDetailedInfo(similar);
-		new ResultWindow(histories, currentPatientHistory, values, age);
+		new ResultWindow(histories, currentPatientHistory, values, age, GMFCS_currentPatient);
 	}
 
 	private ExaminationHistory getChildsExaminationsHistory(int childId)
@@ -128,6 +128,13 @@ public class Program
 							orthosis.getString(7), orthosis.getString(8), orthosis.getString(9)) // goal{Gait/Balance/Exercise}Achieved
 					);
 				}
+				
+				ResultSet GMFCS = this.fetchResult("select gmfcs from examination where examination.id = " + examinationId);
+				while (GMFCS.next())
+				{
+					examination.GMFCS = GMFCS.getInt(1);
+				}
+				
 				history.addExamination(examination);
 			}
 			return history;
@@ -198,13 +205,11 @@ public class Program
 	// values
 	// Returns a list with the examinations that are most similar
 	// Todo filtrera bort dem där åldern är fel
-	// pusha en kommentar
-	private Vector<Similarity> fetchMostSimilar(int[] values, int age, String query)
+	private Vector<Similarity> fetchMostSimilar(int[] values, int age, String query, int GMFCS_currentPatient)
 	{
 		//getNrOfCol är lines i meta.csv
-		values = new int[MetaHandler.getNrOfColumns()];
 		Vector<Similarity> similarities = new Vector<Similarity>();
-		query += "child, birth_year, examination.date from child, examination where examination.child = child.id";
+		query += "child, birth_year, examination.date, gmfcs from child, examination where examination.child = child.id";
 		ResultSet result = this.fetchResult(query.toString());
 		
 		try
@@ -216,42 +221,46 @@ public class Program
 				String examinationDate = result.getString(nrOfColumns + 3);
 				double ageAtExamination = Age.getAgeAtExamination(birthYear, examinationDate);
 				double ageSimilarity = Age.calculateSimilarity(ageAtExamination, age);
+				int GMFCS_otherPatient = result.getInt(nrOfColumns + 4);
 				// Only care about examinations where age difference is not too
 				// large
-				if (ageSimilarity > 0)
+				if(GMFCS_currentPatient == GMFCS_otherPatient)
 				{
-					double similarity = 0;
-					int childId = result.getInt(nrOfColumns + 1);
-					SimilarityHistoryComplete simHistory = new SimilarityHistoryComplete(childId);
-					double ageWeight = Age.getWeight();
-					double ageTotal = ageSimilarity * ageWeight;
-					// similarity += ageSimilarity;
-					similarity += ageTotal;
-					simHistory.addHistory(
-							new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageWeight, ageTotal));
-					for (int i = 0; i < nrOfColumns; i++)
+					if (ageSimilarity > 0)
 					{
-						String valuePrep = result.getString(i + 1);
-						int value;
-						if (valuePrep == null)
-						{ // Data is missing. Use rounded average. Todo: Inform
-							// user that average is used
-							value = MetaHandler.getAverage(i);
-						}
-						else
+						double similarity = 0;
+						int childId = result.getInt(nrOfColumns + 1);
+						SimilarityHistoryComplete simHistory = new SimilarityHistoryComplete(childId);
+						double ageWeight = Age.getWeight();
+						double ageTotal = ageSimilarity * ageWeight;
+						// similarity += ageSimilarity;
+						similarity += ageTotal;
+						simHistory.addHistory(
+								new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageWeight, ageTotal));
+						for (int i = 0; i < nrOfColumns; i++)
 						{
-							value = result.getInt(i + 1);
+							String valuePrep = result.getString(i + 1);
+							int value;
+							if (valuePrep == null)
+							{ // Data is missing. Use rounded average. Todo: Inform
+								// user that average is used
+								value = MetaHandler.getAverage(i);
+							}
+							else
+							{
+								value = result.getInt(i + 1);
+							}
+							double columnSimilarity = MetaHandler.calculateWeight(i, values[i], value);
+							double weight = MetaHandler.getWeight(i);
+							double theSim = columnSimilarity * weight;
+							simHistory.addHistory(new SimilarityHistory(MetaHandler.getColumnsName(i), values[i], value,
+									columnSimilarity, weight, theSim));
+							similarity += theSim;
 						}
-						double columnSimilarity = MetaHandler.calculateWeight(i, values[i], value);
-						double weight = MetaHandler.getWeight(i);
-						double theSim = columnSimilarity * weight;
-						simHistory.addHistory(new SimilarityHistory(MetaHandler.getColumnsName(i), values[i], value,
-								columnSimilarity, weight, theSim));
-						similarity += theSim;
+						simHistory.setTotalSimilarity(similarity);
+						similarities.add(
+								new Similarity(result.getInt(nrOfColumns + 1), similarity, examinationDate, simHistory));
 					}
-					simHistory.setTotalSimilarity(similarity);
-					similarities.add(
-							new Similarity(result.getInt(nrOfColumns + 1), similarity, examinationDate, simHistory));
 				}
 			}
 			Collections.sort(similarities);
@@ -345,7 +354,7 @@ public class Program
 		{
 			e.printStackTrace();
 		}
-		new FetchSimilarWindow(this, children);
+		new ExistingPatientsWindow(this, children);
 	}
 
 	// Fetch the values from the latest examination of a certain child
@@ -356,7 +365,7 @@ public class Program
 		{
 			int nrOfColumns = MetaHandler.getNrOfColumns();
 			String query = "select " + MetaHandler.getColumnNamesCommaSeparated()
-					+ "date, birth_year from examination, child where child = " + child.getId()
+					+ "date, birth_year, gmfcs from examination, child where child = " + child.getId()
 					+ " and examination.child = child.id order by date desc limit 1";
 			ResultSet result = this.fetchResult(query.toString());
 			result.next();
@@ -377,7 +386,7 @@ public class Program
 			Date examinationDate = Examination.sqlStringToDate(result.getString(nrOfColumns + 1));
 			Date birthDate = Examination.birthYearToDate(result.getInt(nrOfColumns + 2));
 			double ageAtExamination = Examination.ageDiffToDouble(examinationDate, birthDate);
-			this.fetchSimilar(values, (int) ageAtExamination, this.getChildsExaminationsHistory(child.getId()));
+			this.fetchSimilar(values, (int) ageAtExamination, this.getChildsExaminationsHistory(child.getId()), result.getInt(nrOfColumns + 3));
 		}
 		catch (Exception e)
 		{

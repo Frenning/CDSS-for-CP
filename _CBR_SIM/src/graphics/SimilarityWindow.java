@@ -67,7 +67,10 @@ public class SimilarityWindow extends JFrame
 	    while (i < values.length) {
 	    	svalues[i] = String.valueOf(values[i++]);
 	    }
-
+	    label = new JLabel(Integer.toString(age));
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		currentPatientValuesPanel.add(label);
 		for (String data : svalues)
 		{
 			label = new JLabel(data);

@@ -42,6 +42,11 @@ public class ExaminationHistory
 	{
 		return examinations.get(0);
 	}
+	
+	public Examination last()
+	{
+		return examinations.lastElement();
+	}
 
 	public void setRelevant(Examination relevant)
 	{

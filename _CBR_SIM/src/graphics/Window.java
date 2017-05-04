@@ -27,6 +27,7 @@ public class Window extends JFrame
 	private Program program;
 	private SliderPanel[] panels = new SliderPanel[MetaHandler.getNrOfColumns()];
 	private SliderPanel agePanel = new SliderPanel(new PanelData("birth_year", "Ålder", Age.MIN, Age.MAX));
+	private SliderPanel gmfcsPanel = new SliderPanel(new PanelData("gmfcs", "GMFCS", 1, 5));
 	private JButton buttonFetch = new JButton("Hämta patient från databas");
 	private JButton button = new JButton("Visa liknande patienter");
 	private JMenuBar menuBar = new JMenuBar();
@@ -52,6 +53,7 @@ public class Window extends JFrame
 		add(buttonFetch);
 		buttonFetch.addActionListener(new ButtonListenerFetch());
 		add(agePanel);
+		add(gmfcsPanel);
 		PanelData[] data = MetaHandler.getPanelData();
 		for (int i = 0; i < data.length; i++)
 		{
@@ -78,7 +80,7 @@ public class Window extends JFrame
 				values[i] = panels[i].getSliderValue();
 			}
 			int age = agePanel.getSliderValue();
-			program.fetchSimilar(values, age);
+			program.fetchSimilar(values, age, gmfcsPanel.getSliderValue());
 		}
 	}
 

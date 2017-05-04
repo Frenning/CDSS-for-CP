@@ -19,7 +19,7 @@ import javax.swing.border.LineBorder;
 import cbr.Child;
 import cbr.Program;
 
-public class FetchSimilarWindow extends JFrame
+public class ExistingPatientsWindow extends JFrame
 {
 	private Program program;
 	private int width = 1500;
@@ -34,7 +34,7 @@ public class FetchSimilarWindow extends JFrame
 	private JScrollPane topScroll = new JScrollPane(descriptionPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-	public FetchSimilarWindow(Program program, Vector<Child> children)
+	public ExistingPatientsWindow(Program program, Vector<Child> children)
 	{
 		this.program = program;
 		this.children = children;

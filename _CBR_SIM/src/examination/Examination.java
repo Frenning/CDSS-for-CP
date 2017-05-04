@@ -18,6 +18,7 @@ public class Examination
 	private int[] plantar = new int[2];
 	private Dorsal dorsal;
 	private double ageAtExamination;
+	public int GMFCS;
 	private Vector<Treatment> treatments = new Vector<Treatment>();
 	private Vector<Boutolium> boutoliums = new Vector<Boutolium>();
 	private Vector<Orthosis> orthosis = new Vector<Orthosis>();
@@ -35,6 +36,7 @@ public class Examination
 			this.dateOriginal = result.getString(offset + 1);
 			this.date = this.dateFormat.parse(dateOriginal);
 			this.ageAtExamination = ageDiffToDouble(date, birthDate);
+			
 		}
 		catch (Exception e)
 		{
