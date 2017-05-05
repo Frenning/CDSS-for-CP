@@ -25,7 +25,7 @@ public class Age
 	public static int MIN = 2;
 	public static int MAX = 20;
 	private static int range = MAX - MIN;
-	private static double weight = 0.25;
+	private static double weight = 0.0;
 	private static AgeSimTableModel ageSimTableModel = new AgeSimTableModel();
 
 	// Todo hämta från
@@ -51,6 +51,53 @@ public class Age
 	{
 		return Examination.ageDiffToDouble(Examination.sqlStringToDate(examinationDate),
 				Examination.birthYearToDate(birthYear));
+	}
+	
+	public static boolean isSameAgeGroup(int currentAge, int otherAge)
+	{
+		
+		switch(currentAge)
+		{
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			return otherAge == currentAge;
+		case 8:
+			return (8 == otherAge || otherAge == 9);
+		case 9:
+			return (8 <= otherAge && otherAge <= 10);
+		case 10:
+			return (9 <= otherAge && otherAge <= 12);
+		case 11:
+			return (10 <= otherAge && otherAge <= 13);
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+		case 16:
+		case 17:
+		case 18:
+		case 19:
+			return (currentAge-2 <= otherAge && otherAge <= currentAge+2);
+		case 20:
+		case 21:
+		case 22:
+			return (currentAge-(currentAge-20)-2 <= otherAge && otherAge <= currentAge+5);			//exempel: 21-(21-20)-2 = 18
+		case 23:
+		case 24:
+		case 25:
+		case 26:
+		case 27:
+		case 28:
+		case 29:
+		case 30:
+			return (currentAge-5 <= otherAge && otherAge <= currentAge+5);
+		}
+		return false;
 	}
 
 	public static double getWeight()

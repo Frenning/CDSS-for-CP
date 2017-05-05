@@ -129,11 +129,20 @@ public class Program
 					);
 				}
 				
-				ResultSet GMFCS = this.fetchResult("select gmfcs from examination where examination.id = " + examinationId);
-				while (GMFCS.next())
+				ResultSet GMFCS_result = this.fetchResult("select gmfcs from child, examination where examination.child = child.id and child.id = " 
+						+ childId);
+				GMFCS_result.next();
+				int GMFCS = GMFCS_result.getInt(1);
+				
+				if(GMFCS < 1 || GMFCS> 5)
 				{
-					examination.GMFCS = GMFCS.getInt(1);
+					while(GMFCS_result.next() && (GMFCS < 1 || GMFCS > 5))
+					{
+						GMFCS = GMFCS_result.getInt(1);
+					}
 				}
+				
+				examination.GMFCS = GMFCS;
 				
 				history.addExamination(examination);
 			}
@@ -209,7 +218,7 @@ public class Program
 	{
 		//getNrOfCol är lines i meta.csv
 		Vector<Similarity> similarities = new Vector<Similarity>();
-		query += "child, birth_year, examination.date, gmfcs from child, examination where examination.child = child.id";
+		query += "child, birth_year, examination.date from child, examination where examination.child = child.id";
 		ResultSet result = this.fetchResult(query.toString());
 		
 		try
@@ -221,12 +230,28 @@ public class Program
 				String examinationDate = result.getString(nrOfColumns + 3);
 				double ageAtExamination = Age.getAgeAtExamination(birthYear, examinationDate);
 				double ageSimilarity = Age.calculateSimilarity(ageAtExamination, age);
-				int GMFCS_otherPatient = result.getInt(nrOfColumns + 4);
+				
+				ResultSet GMFCS_result = this.fetchResult("select gmfcs from child, examination where examination.child = child.id and child.id = " 
+						+ result.getInt(nrOfColumns + 1));
+				GMFCS_result.next();
+				int GMFCS_otherPatient = GMFCS_result.getInt(1);
+				
+				if(GMFCS_otherPatient < 1 || GMFCS_otherPatient > 5)
+				{
+					while(GMFCS_result.next() && (GMFCS_otherPatient < 1 || GMFCS_otherPatient > 5))
+					{
+						GMFCS_otherPatient = GMFCS_result.getInt(1);
+					}
+					if(GMFCS_otherPatient < 1 || GMFCS_otherPatient > 5)
+						continue;
+				}
 				// Only care about examinations where age difference is not too
 				// large
+				// Check so that the CMFCS-level is matching
 				if(GMFCS_currentPatient == GMFCS_otherPatient)
 				{
-					if (ageSimilarity > 0)
+					// Check so that age of examination of matching patient is in the same age-group as current patient
+					if (Age.isSameAgeGroup(age, (int)ageAtExamination))
 					{
 						double similarity = 0;
 						int childId = result.getInt(nrOfColumns + 1);
