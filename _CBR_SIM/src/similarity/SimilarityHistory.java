@@ -6,17 +6,15 @@ public class SimilarityHistory
 	private double valueCurrentPatient;
 	private double valueFromCaseBase;
 	private double similarity;
-	private double weight;
 	private double totalSimilarity;
 
 	public SimilarityHistory(String description, double valueCurrentPatient, double valueFromCaseBase,
-			double similarity, double weight, double totalSimilarity)
+			double similarity, double totalSimilarity)
 	{
 		this.description = description;
 		this.valueCurrentPatient = valueCurrentPatient;
 		this.valueFromCaseBase = valueFromCaseBase;
 		this.similarity = similarity;
-		this.weight = weight;
 		this.totalSimilarity = totalSimilarity;
 	}
 
@@ -43,11 +41,6 @@ public class SimilarityHistory
 	public double getSimilarity()
 	{
 		return similarity;
-	}
-
-	public double getWeight()
-	{
-		return this.weight;
 	}
 
 	public double getTotal()

@@ -89,7 +89,7 @@ public class SimilarityWindow extends JFrame
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);
-		label = new JLabel(String.format("%.3f", Age.getWeight()));
+		label = new JLabel(String.format("%.3f", 0.0));
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);

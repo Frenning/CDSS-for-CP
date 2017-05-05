@@ -155,7 +155,7 @@ public class MetaHandler
 		return averages[index];
 	}
 
-	public static double calculateWeight(int index, int current, int other)
+	public static double calculateSimilarity(int index, int current, int other)
 	{
 		return calculators[index].getWeight(current, other);
 	}

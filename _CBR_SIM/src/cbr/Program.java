@@ -128,22 +128,24 @@ public class Program
 							orthosis.getString(7), orthosis.getString(8), orthosis.getString(9)) // goal{Gait/Balance/Exercise}Achieved
 					);
 				}
-				
-				ResultSet GMFCS_result = this.fetchResult("select gmfcs from child, examination where examination.child = child.id and child.id = " 
-						+ childId);
+				// if you find a examination where GMFCS is null you put the
+				// GMFCS from later examinations as that value
+				ResultSet GMFCS_result = this.fetchResult(
+						"select gmfcs from child, examination where examination.child = child.id and child.id = "
+								+ childId);
 				GMFCS_result.next();
 				int GMFCS = GMFCS_result.getInt(1);
-				
-				if(GMFCS < 1 || GMFCS> 5)
+
+				if (GMFCS < 1 || GMFCS > 5)
 				{
-					while(GMFCS_result.next() && (GMFCS < 1 || GMFCS > 5))
+					while (GMFCS_result.next() && (GMFCS < 1 || GMFCS > 5))
 					{
 						GMFCS = GMFCS_result.getInt(1);
 					}
 				}
-				
+
 				examination.GMFCS = GMFCS;
-				
+
 				history.addExamination(examination);
 			}
 			return history;
@@ -213,14 +215,14 @@ public class Program
 	// Fetches all examinations and calculates similarity to the current child's
 	// values
 	// Returns a list with the examinations that are most similar
-	// Todo filtrera bort dem där åldern är fel
+
 	private Vector<Similarity> fetchMostSimilar(int[] values, int age, String query, int GMFCS_currentPatient)
 	{
-		//getNrOfCol är lines i meta.csv
+		// getNrOfCol är lines i meta.csv
 		Vector<Similarity> similarities = new Vector<Similarity>();
 		query += "child, birth_year, examination.date from child, examination where examination.child = child.id";
 		ResultSet result = this.fetchResult(query.toString());
-		
+
 		try
 		{
 			int nrOfColumns = MetaHandler.getNrOfColumns();
@@ -230,44 +232,55 @@ public class Program
 				String examinationDate = result.getString(nrOfColumns + 3);
 				double ageAtExamination = Age.getAgeAtExamination(birthYear, examinationDate);
 				double ageSimilarity = Age.calculateSimilarity(ageAtExamination, age);
+
+				// fetch standing columns
+				ResultSet standingAid_result = this.fetchResult("select StandingSelf, UsesHelp, DaysPerWeek, TimesPerDay from standing");
+				Utility utility = new Utility();
+				utility.similarityStanding(standingAid_result);
 				
-				ResultSet GMFCS_result = this.fetchResult("select gmfcs from child, examination where examination.child = child.id and child.id = " 
-						+ result.getInt(nrOfColumns + 1));
+				
+				// fetch results based on GFMCS in a table (like in database)
+				ResultSet GMFCS_result = this.fetchResult(
+						"select gmfcs from child, examination where examination.child = child.id and child.id = "
+								+ result.getInt(nrOfColumns + 1));
+				// Next gives row with columns
 				GMFCS_result.next();
+				// retrieve column from row which is GMFCS value
 				int GMFCS_otherPatient = GMFCS_result.getInt(1);
-				
-				if(GMFCS_otherPatient < 1 || GMFCS_otherPatient > 5)
+				// control lower than 1 and higher than 5 values
+				if (GMFCS_otherPatient < 1 || GMFCS_otherPatient > 5)
 				{
-					while(GMFCS_result.next() && (GMFCS_otherPatient < 1 || GMFCS_otherPatient > 5))
+					while (GMFCS_result.next() && (GMFCS_otherPatient < 1 || GMFCS_otherPatient > 5))
 					{
 						GMFCS_otherPatient = GMFCS_result.getInt(1);
 					}
-					if(GMFCS_otherPatient < 1 || GMFCS_otherPatient > 5)
+					if (GMFCS_otherPatient < 1 || GMFCS_otherPatient > 5)
 						continue;
 				}
 				// Only care about examinations where age difference is not too
 				// large
 				// Check so that the CMFCS-level is matching
-				if(GMFCS_currentPatient == GMFCS_otherPatient)
+				if (GMFCS_currentPatient == GMFCS_otherPatient)
 				{
-					// Check so that age of examination of matching patient is in the same age-group as current patient
-					if (Age.isSameAgeGroup(age, (int)ageAtExamination))
+					// Check so that age of examination of matching patient is
+					// in the same age-group as current patient
+					if (Age.isSameAgeGroup(age, (int) ageAtExamination))
 					{
 						double similarity = 0;
 						int childId = result.getInt(nrOfColumns + 1);
 						SimilarityHistoryComplete simHistory = new SimilarityHistoryComplete(childId);
-						double ageWeight = Age.getWeight();
-						double ageTotal = ageSimilarity * ageWeight;
-						// similarity += ageSimilarity;
+						double ageTotal = ageSimilarity * 0.0;
+
 						similarity += ageTotal;
 						simHistory.addHistory(
-								new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageWeight, ageTotal));
+								new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageTotal));
 						for (int i = 0; i < nrOfColumns; i++)
 						{
 							String valuePrep = result.getString(i + 1);
 							int value;
 							if (valuePrep == null)
-							{ // Data is missing. Use rounded average. Todo: Inform
+							{ // Data is missing. Use rounded average. Todo:
+								// Inform
 								// user that average is used
 								value = MetaHandler.getAverage(i);
 							}
@@ -275,16 +288,16 @@ public class Program
 							{
 								value = result.getInt(i + 1);
 							}
-							double columnSimilarity = MetaHandler.calculateWeight(i, values[i], value);
+							double columnSimilarity = MetaHandler.calculateSimilarity(i, values[i], value);
 							double weight = MetaHandler.getWeight(i);
 							double theSim = columnSimilarity * weight;
 							simHistory.addHistory(new SimilarityHistory(MetaHandler.getColumnsName(i), values[i], value,
-									columnSimilarity, weight, theSim));
+									columnSimilarity, theSim));
 							similarity += theSim;
 						}
 						simHistory.setTotalSimilarity(similarity);
-						similarities.add(
-								new Similarity(result.getInt(nrOfColumns + 1), similarity, examinationDate, simHistory));
+						similarities.add(new Similarity(result.getInt(nrOfColumns + 1), similarity, examinationDate,
+								simHistory));
 					}
 				}
 			}
@@ -411,7 +424,8 @@ public class Program
 			Date examinationDate = Examination.sqlStringToDate(result.getString(nrOfColumns + 1));
 			Date birthDate = Examination.birthYearToDate(result.getInt(nrOfColumns + 2));
 			double ageAtExamination = Examination.ageDiffToDouble(examinationDate, birthDate);
-			this.fetchSimilar(values, (int) ageAtExamination, this.getChildsExaminationsHistory(child.getId()), result.getInt(nrOfColumns + 3));
+			this.fetchSimilar(values, (int) ageAtExamination, this.getChildsExaminationsHistory(child.getId()),
+					result.getInt(nrOfColumns + 3));
 		}
 		catch (Exception e)
 		{

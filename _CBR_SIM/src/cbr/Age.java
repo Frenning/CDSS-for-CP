@@ -25,7 +25,6 @@ public class Age
 	public static int MIN = 2;
 	public static int MAX = 20;
 	private static int range = MAX - MIN;
-	private static double weight = 0.0;
 	private static AgeSimTableModel ageSimTableModel = new AgeSimTableModel();
 
 	// Todo hämta från
@@ -98,11 +97,6 @@ public class Age
 			return (currentAge-5 <= otherAge && otherAge <= currentAge+5);
 		}
 		return false;
-	}
-
-	public static double getWeight()
-	{
-		return weight;
 	}
 
 	public static void showAgeSimWindow()
