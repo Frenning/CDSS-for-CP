@@ -5,7 +5,9 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Enumeration;
 
+import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -29,9 +31,14 @@ public class Window extends JFrame
 	private Program program;
 	private SliderPanel[] panels = new SliderPanel[MetaHandler.getNrOfColumns()];
 	private SliderPanel agePanel = new SliderPanel(new PanelData("birth_year", "Ålder", Age.MIN, Age.MAX));
+	private SliderPanel daysPerWeekPanel = new SliderPanel(new PanelData("daysPerWeek", "Använder ståhjälpmedel: Dagar per vecka", 0, 7));
 	private SliderPanel gmfcsPanel = new SliderPanel(new PanelData("gmfcs", "GMFCS", 1, 5));
 	private JPanel standingBulletsFrame = new JPanel();
+	private JPanel standingHoursBulletsFrame = new JPanel();
+	private JPanel standingDaysBulletsFrame = new JPanel();
 	private ButtonGroup standingBulletGroup = new ButtonGroup();
+	private ButtonGroup standingHoursBulletGroup = new ButtonGroup();
+	private ButtonGroup standingDaysBulletGroup = new ButtonGroup();
 	private JButton buttonFetch = new JButton("Hämta patient från databas");
 	private JButton button = new JButton("Visa liknande patienter");
 	private JMenuBar menuBar = new JMenuBar();
@@ -66,10 +73,43 @@ public class Window extends JFrame
 		standingBulletsFrame.add(btn1);
 		standingBulletsFrame.add(btn2);
 		
+		JLabel standingHoursLabel = new JLabel("Använder ståhjälpmedel: Antal timmar per dag");
+		JRadioButton btn_lt1 = new JRadioButton("<1");
+		JRadioButton btn0102 = new JRadioButton("1-2");
+		JRadioButton btn0304 = new JRadioButton("3-4");
+		JRadioButton btn_gt4 = new JRadioButton(">4");
+		standingHoursBulletGroup.add(btn_lt1);
+		standingHoursBulletGroup.add(btn0102);
+		standingHoursBulletGroup.add(btn0304);
+		standingHoursBulletGroup.add(btn_gt4);
+		standingHoursBulletsFrame.add(standingHoursLabel);
+		standingHoursBulletsFrame.add(btn_lt1);
+		standingHoursBulletsFrame.add(btn0102);
+		standingHoursBulletsFrame.add(btn0304);
+		standingHoursBulletsFrame.add(btn_gt4);
+		
+		JLabel standingDaysLabel = new JLabel("Använder ståhjälpmedel: Dagar per vecka");
+		JRadioButton btn12 = new JRadioButton("1-2");
+		JRadioButton btn34 = new JRadioButton("3-4");
+		JRadioButton btn56 = new JRadioButton("5-6");
+		JRadioButton btn7 = new JRadioButton("7");
+		standingDaysBulletGroup.add(btn12);
+		standingDaysBulletGroup.add(btn34);
+		standingDaysBulletGroup.add(btn56);
+		standingDaysBulletGroup.add(btn7);
+		standingDaysBulletsFrame.add(standingDaysLabel);
+		standingDaysBulletsFrame.add(btn12);
+		standingDaysBulletsFrame.add(btn34);
+		standingDaysBulletsFrame.add(btn56);
+		standingDaysBulletsFrame.add(btn7);
+		
 		
 		add(agePanel);
 		add(gmfcsPanel);
 		add(standingBulletsFrame);
+		add(standingHoursBulletsFrame);
+		add(standingDaysBulletsFrame);
+		add(daysPerWeekPanel);
 		PanelData[] data = MetaHandler.getPanelData();
 		for (int i = 0; i < data.length; i++)
 		{
@@ -79,7 +119,7 @@ public class Window extends JFrame
 		}
 		add(button);
 		button.addActionListener(new ButtonListenerShow());
-		setSize(new Dimension(800, 850));
+		setSize(new Dimension(800, 1000));
 		setTitle("Decision support - Din patient");
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -90,16 +130,43 @@ public class Window extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			if(standingBulletGroup.getSelection() == null)
+			if(standingBulletGroup.getSelection() == null || standingHoursBulletGroup == null || standingDaysBulletGroup == null)
 				return;
-			int[] values = new int[panels.length];
+			int[] values = new int[panels.length + 1];
 			for (int i = 0; i < panels.length; i++)
 			{
 				values[i] = panels[i].getSliderValue();
 			}
 			int age = agePanel.getSliderValue();
+			
+			
+			String [] standingInformation = new String [3];
+			
+	        for (Enumeration<AbstractButton>buttons = standingBulletGroup.getElements(); buttons.hasMoreElements();) {
+	            AbstractButton button = buttons.nextElement();
 
-			program.fetchSimilar(values, age, gmfcsPanel.getSliderValue(), standingBulletGroup.getSelection().getActionCommand());
+	            if (button.isSelected()) {
+	            	standingInformation[0] = button.getText();
+	            }
+	        }
+	        
+	        for (Enumeration<AbstractButton>buttons = standingDaysBulletGroup.getElements(); buttons.hasMoreElements();) {
+	            AbstractButton button = buttons.nextElement();
+
+	            if (button.isSelected()) {
+	            	standingInformation[1] = button.getText();
+	            }
+	        }
+	        
+	        for (Enumeration<AbstractButton>buttons = standingHoursBulletGroup.getElements(); buttons.hasMoreElements();) {
+	            AbstractButton button = buttons.nextElement();
+
+	            if (button.isSelected()) {
+	            	standingInformation[2] = button.getText();
+	            }
+	        }
+			
+			program.fetchSimilar(values, age, gmfcsPanel.getSliderValue(), standingInformation);
 		}
 	}
 

@@ -35,24 +35,24 @@ public class Program
 		new Window(this);
 	}
 
-	public void fetchSimilar(int[] values, int age, int GMFCS, String standing)
+	public void fetchSimilar(int[] values, int age, int GMFCS, String [] standingInformation)
 	{
 		long start = System.nanoTime();
 		System.out.println(System.nanoTime());
 		ExaminationHistory currentPatientHistory = new ExaminationHistory(0, 2016 - age, 0);
 		currentPatientHistory.addExamination(new Examination(values, age));
-		this.fetchSimilar(values, age, currentPatientHistory, GMFCS, standing);
+		this.fetchSimilar(values, age, currentPatientHistory, GMFCS, standingInformation);
 		long timing = System.nanoTime() - start;
 		timing /= 1000;
 		System.out.println(timing + " millisekunder");
 	}
 
-	public void fetchSimilar(int[] values, int age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient, String standing)
+	public void fetchSimilar(int[] values, int age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient, String [] standingInformation)
 	{
 		String query = "select " + MetaHandler.getColumnNamesCommaSeparated();
-		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient, standing);
+		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient, standingInformation);
 		Vector<ExaminationHistory> histories = this.getDetailedInfo(similar);
-		new ResultWindow(histories, currentPatientHistory, values, age, GMFCS_currentPatient);
+		new ResultWindow(histories, currentPatientHistory, values, age, GMFCS_currentPatient, standingInformation);
 	}
 
 	private ExaminationHistory getChildsExaminationsHistory(int childId)
@@ -145,6 +145,37 @@ public class Program
 				}
 
 				examination.GMFCS = GMFCS;
+			
+				ResultSet standingInformation = this.fetchResult("select * from standing where examinationID = " + examinationId);
+				
+				if(standingInformation.next())
+				{
+					if( standingInformation.getString("UsesHelp") == null)
+						examination.standingInformation[0] = null;
+					else 
+						examination.standingInformation[0] = standingInformation.getString("UsesHelp");
+						
+					if( standingInformation.getString("DaysPerWeek") == null)
+						examination.standingInformation[1] = null;
+					else 
+						examination.standingInformation[1] = standingInformation.getString("DaysPerWeek");
+						
+					if( standingInformation.getString("HoursPerDay") == null)
+						examination.standingInformation[2] = null;
+					else
+						examination.standingInformation[2] = standingInformation.getString("HoursPerDay");
+				}
+				else
+				{
+					examination.standingInformation[0] = null;
+					examination.standingInformation[1] = null;
+					examination.standingInformation[2] = null;
+				}
+				
+				
+				
+				
+				
 
 				history.addExamination(examination);
 			}
@@ -216,7 +247,7 @@ public class Program
 	// values
 	// Returns a list with the examinations that are most similar
 
-	private Vector<Similarity> fetchMostSimilar(int[] values, int age, String query, int GMFCS_currentPatient, String standing)
+	private Vector<Similarity> fetchMostSimilar(int[] values, int age, String query, int GMFCS_currentPatient, String [] standingInformation)
 	{
 		// getNrOfCol är lines i meta.csv
 		Vector<Similarity> similarities = new Vector<Similarity>();
@@ -270,7 +301,7 @@ public class Program
 						ResultSet standingAid_result = this.fetchResult("select * from standing where examinationID = " + result.getInt(nrOfColumns + 4));
 						
 						// Add standing similarity to total similarity
-						similarity += Utility.similarityStanding(standingAid_result, standing);
+						similarity += Utility.similarityStanding(standingAid_result, standingInformation);
 						
 						simHistory.addHistory(
 								new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageTotal));
@@ -403,7 +434,7 @@ public class Program
 		{
 			int nrOfColumns = MetaHandler.getNrOfColumns();
 			String query = "select " + MetaHandler.getColumnNamesCommaSeparated()
-					+ "date, birth_year, gmfcs, UsesHelp from examination, child, standing where child = " + child.getId()
+					+ "date, birth_year, gmfcs, UsesHelp, DaysPerWeek, HoursPerDay from examination, child, standing where child = " + child.getId()
 					+ " and examination.child = child.id order by date desc limit 1";
 			ResultSet result = this.fetchResult(query.toString());
 			result.next();
@@ -421,11 +452,17 @@ public class Program
 					values[i] = Integer.parseInt(value);
 				}
 			}
+			
+			String [] standingInformation = new String [3];
+			standingInformation[0] = result.getString(nrOfColumns + 4);
+			standingInformation[1] = result.getString(nrOfColumns + 5);
+			standingInformation[2] = result.getString(nrOfColumns + 6);
+			
 			Date examinationDate = Examination.sqlStringToDate(result.getString(nrOfColumns + 1));
 			Date birthDate = Examination.birthYearToDate(result.getInt(nrOfColumns + 2));
 			double ageAtExamination = Examination.ageDiffToDouble(examinationDate, birthDate);
 			this.fetchSimilar(values, (int) ageAtExamination, this.getChildsExaminationsHistory(child.getId()),
-					result.getInt(nrOfColumns + 3), result.getString(nrOfColumns + 4));
+					result.getInt(nrOfColumns + 3), standingInformation);
 		}
 		catch (Exception e)
 		{

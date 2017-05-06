@@ -19,6 +19,7 @@ public class Examination
 	private Dorsal dorsal;
 	private double ageAtExamination;
 	public int GMFCS;
+	public String [] standingInformation = new String[3];
 	private Vector<Treatment> treatments = new Vector<Treatment>();
 	private Vector<Boutolium> boutoliums = new Vector<Boutolium>();
 	private Vector<Orthosis> orthosis = new Vector<Orthosis>();

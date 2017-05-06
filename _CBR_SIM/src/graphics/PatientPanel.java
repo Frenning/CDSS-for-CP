@@ -26,7 +26,7 @@ public class PatientPanel extends JPanel
 	private String treatmentLabelContent = "";
 	
 	
-	public PatientPanel(ExaminationHistory history, int GMFCS)
+	public PatientPanel(ExaminationHistory history, int GMFCS, String[] standingInformation)
 	{
 		this.history = history;
 		historyPanel = new HistoryPanel(this, history);
@@ -36,8 +36,11 @@ public class PatientPanel extends JPanel
 		setBorder(new EtchedBorder());
 		valuePanel = new PatientValuePanel(history.relevant().getValues(), true);
 		valuePanel.setParent(this);
-		add(this.newPatientLabel());
-		add(this.newPatientGMFCSLabel(GMFCS));
+		add(this.patientLabel("Din patient", JLabel.LEFT));
+		add(this.patientLabel("GMFCS: " + GMFCS, JLabel.RIGHT));
+		add(this.patientLabel(new String("Använder ståhjälpmedel: " + standingInformation[0]), JLabel.RIGHT));
+		add(this.patientLabel(new String("Dagar per vecka: " + standingInformation[1]), JLabel.RIGHT));
+		add(this.patientLabel(new String("Timmar per dag: " + standingInformation[2]), JLabel.RIGHT));
 		add(valuePanel);
 		add(historyPanel);
 		treatmentLabel = this.treatmentLabel();
@@ -62,7 +65,10 @@ public class PatientPanel extends JPanel
 		valuePanel = new PatientValuePanel(history.relevant().getValues(), true);
 		valuePanel.setParent(this);
 		add(this.patientLabel());
-		add(this.patientGMFCSLabel());
+		add(this.patientLabel(new String("GMFCS: " + history.last().GMFCS), JLabel.RIGHT));
+		add(this.patientLabel(new String("Använder ståhjälpmedel: " + history.relevant().standingInformation[0]), JLabel.RIGHT));
+		add(this.patientLabel(new String("Dagar per vecka: " + history.relevant().standingInformation[1]), JLabel.RIGHT));
+		add(this.patientLabel(new String("Timmar per dag: " + history.relevant().standingInformation[2]), JLabel.RIGHT));
 		add(valuePanel);
 		add(historyPanel);
 		treatmentLabel = this.treatmentLabel();
@@ -74,30 +80,6 @@ public class PatientPanel extends JPanel
 		treatmentInfoPanel.setBackground(Color.white);
 		treatmentInfoPanel.add(treatmentLabel);
 		scroll.setVisible(false);
-	}
-	
-	private JLabel newPatientLabel()
-	{
-		JLabel patient = new JLabel("Din patient");
-		patient.setFont(new Font("Serif", Font.BOLD, 20));
-		patient.setBackground(Color.white);
-		patient.setBorder(BorderFactory.createEmptyBorder());
-		patient.setHorizontalTextPosition(JLabel.LEFT);
-		patient.setHorizontalTextPosition(JLabel.LEFT);
-		patient.setPreferredSize(new Dimension(WIDTH, 50));
-		return patient;
-	}
-	
-	private JLabel newPatientGMFCSLabel(int GMFCS)
-	{
-		JLabel patient = new JLabel("GMFCS: " + GMFCS);
-		patient.setFont(new Font("Serif", Font.BOLD, 20));
-		patient.setBackground(Color.white);
-		patient.setBorder(BorderFactory.createEmptyBorder());
-		patient.setHorizontalTextPosition(JLabel.RIGHT);
-		patient.setHorizontalTextPosition(JLabel.RIGHT);
-		patient.setPreferredSize(new Dimension(WIDTH, 50));
-		return patient;
 	}
 
 	private JLabel patientLabel()
@@ -112,14 +94,14 @@ public class PatientPanel extends JPanel
 		return patient;
 	}
 	
-	private JLabel patientGMFCSLabel()
+	private JLabel patientLabel(String text, int pos)
 	{
-		JLabel patient = new JLabel("GMFCS: " + history.last().GMFCS);
+		JLabel patient = new JLabel(text);
 		patient.setFont(new Font("Serif", Font.BOLD, 20));
 		patient.setBackground(Color.white);
 		patient.setBorder(BorderFactory.createEmptyBorder());
-		patient.setHorizontalTextPosition(JLabel.RIGHT);
-		patient.setHorizontalTextPosition(JLabel.RIGHT);
+		patient.setHorizontalTextPosition(pos);
+		patient.setHorizontalTextPosition(pos);
 		patient.setPreferredSize(new Dimension(WIDTH, 50));
 		return patient;
 	}
