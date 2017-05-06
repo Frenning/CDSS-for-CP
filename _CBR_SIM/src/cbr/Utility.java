@@ -4,24 +4,31 @@ import java.sql.ResultSet;
 
 public class Utility
 {
-	public double similarityStanding (ResultSet resultSet)
+	public static double similarityStanding (ResultSet resultSet, String standing_currentPatient)
 	{
 		try{
-			while (resultSet.next())
+			// Om raden är tom, returnera similarity 0.0
+			if (!resultSet.next())
 			{
-				resultSet.next();
-				// retrieve column from row which is GMFCS value
+				return 0.0;
+			}
+			else
+			{
 				String standing_otherPatient = resultSet.getString("UsesHelp");
 				
-				if(!resultSet.getString("UsesHelp").equals("ja") || !resultSet.getString("UsesHelp").equals("nej")){
-					while (resultSet.next() && (!resultSet.getString("UsesHelp").equals("ja") || !resultSet.getString("UsesHelp").equals("nej")))
-					{
-						standing_otherPatient = resultSet.getString("UsesHelp");
-					}
-					if (!resultSet.getString("UsesHelp").equals("ja") || !resultSet.getString("UsesHelp").equals("nej"))
-						continue;
+				if(standing_otherPatient != standing_currentPatient)
+				{
+					return 0.0;
+				}
+				else
+				{
+					double similarity = 0.1;
+					// Kolla skillnaden i hur länge de använd ståhjälp och addera på similarityn beroende på hur lika de är.
+					// TODO: räkna ut hur många timmar per vecka patienten använder ståhjälpmedel (DaysPerWeek * HoursPerDay)
+					// och jämför detta värde för båda patienterna. Detta kommer kräva fler sliders på main-windowen för DaysPerWeek och HoursPerDay och 
+					// forwarding av dessa värden genom hela fetchSimilar grejen.
+					String standingTime_otherPatient = resultSet.getString("DaysPerWeek");
                 }
-				
 
 			}
 		}

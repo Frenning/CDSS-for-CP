@@ -2,6 +2,7 @@ package graphics;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.Hashtable;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -47,7 +48,7 @@ public class SliderPanel extends JPanel
 		setPreferredSize(new Dimension(700, 80));
 		setBorder(new EtchedBorder());
 	}
-
+	
 	public int getSliderValue()
 	{
 		return slider.getValue();

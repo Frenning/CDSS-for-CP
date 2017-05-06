@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,6 +15,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
@@ -28,6 +30,8 @@ public class Window extends JFrame
 	private SliderPanel[] panels = new SliderPanel[MetaHandler.getNrOfColumns()];
 	private SliderPanel agePanel = new SliderPanel(new PanelData("birth_year", "Ålder", Age.MIN, Age.MAX));
 	private SliderPanel gmfcsPanel = new SliderPanel(new PanelData("gmfcs", "GMFCS", 1, 5));
+	private JPanel standingBulletsFrame = new JPanel();
+	private ButtonGroup standingBulletGroup = new ButtonGroup();
 	private JButton buttonFetch = new JButton("Hämta patient från databas");
 	private JButton button = new JButton("Visa liknande patienter");
 	private JMenuBar menuBar = new JMenuBar();
@@ -52,8 +56,20 @@ public class Window extends JFrame
 		setLayout(new FlowLayout(FlowLayout.LEFT));
 		add(buttonFetch);
 		buttonFetch.addActionListener(new ButtonListenerFetch());
+		
+		JLabel standingLabel = new JLabel("Använder ståhjälpmedel: ");
+		JRadioButton btn1 = new JRadioButton("Ja");
+		JRadioButton btn2 = new JRadioButton("Nej");
+		standingBulletGroup.add(btn1);
+		standingBulletGroup.add(btn2);
+		standingBulletsFrame.add(standingLabel);
+		standingBulletsFrame.add(btn1);
+		standingBulletsFrame.add(btn2);
+		
+		
 		add(agePanel);
 		add(gmfcsPanel);
+		add(standingBulletsFrame);
 		PanelData[] data = MetaHandler.getPanelData();
 		for (int i = 0; i < data.length; i++)
 		{
@@ -74,13 +90,16 @@ public class Window extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
+			if(standingBulletGroup.getSelection() == null)
+				return;
 			int[] values = new int[panels.length];
 			for (int i = 0; i < panels.length; i++)
 			{
 				values[i] = panels[i].getSliderValue();
 			}
 			int age = agePanel.getSliderValue();
-			program.fetchSimilar(values, age, gmfcsPanel.getSliderValue());
+
+			program.fetchSimilar(values, age, gmfcsPanel.getSliderValue(), standingBulletGroup.getSelection().getActionCommand());
 		}
 	}
 

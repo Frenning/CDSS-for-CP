@@ -6,6 +6,9 @@ public class PanelData
 	private String description;
 	private int min = 0;
 	private int max = 0;
+	
+	public String option1;
+	public String option2;
 
 	public PanelData(String columnName, String description, int min, int max)
 	{
@@ -13,6 +16,14 @@ public class PanelData
 		this.description = description;
 		this.min = min;
 		this.max = max;
+	}
+	
+	public PanelData(String columnName, String description, String option1, String option2)
+	{
+		this.columnName = columnName;
+		this.description = description;
+		this.option1 = option1;
+		this.option2 = option2;
 	}
 
 	public String getColumnName()

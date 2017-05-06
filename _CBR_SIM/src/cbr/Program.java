@@ -35,22 +35,22 @@ public class Program
 		new Window(this);
 	}
 
-	public void fetchSimilar(int[] values, int age, int GMFCS)
+	public void fetchSimilar(int[] values, int age, int GMFCS, String standing)
 	{
 		long start = System.nanoTime();
 		System.out.println(System.nanoTime());
 		ExaminationHistory currentPatientHistory = new ExaminationHistory(0, 2016 - age, 0);
 		currentPatientHistory.addExamination(new Examination(values, age));
-		this.fetchSimilar(values, age, currentPatientHistory, GMFCS);
+		this.fetchSimilar(values, age, currentPatientHistory, GMFCS, standing);
 		long timing = System.nanoTime() - start;
 		timing /= 1000;
 		System.out.println(timing + " millisekunder");
 	}
 
-	public void fetchSimilar(int[] values, int age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient)
+	public void fetchSimilar(int[] values, int age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient, String standing)
 	{
 		String query = "select " + MetaHandler.getColumnNamesCommaSeparated();
-		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient);
+		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient, standing);
 		Vector<ExaminationHistory> histories = this.getDetailedInfo(similar);
 		new ResultWindow(histories, currentPatientHistory, values, age, GMFCS_currentPatient);
 	}
@@ -216,11 +216,11 @@ public class Program
 	// values
 	// Returns a list with the examinations that are most similar
 
-	private Vector<Similarity> fetchMostSimilar(int[] values, int age, String query, int GMFCS_currentPatient)
+	private Vector<Similarity> fetchMostSimilar(int[] values, int age, String query, int GMFCS_currentPatient, String standing)
 	{
 		// getNrOfCol är lines i meta.csv
 		Vector<Similarity> similarities = new Vector<Similarity>();
-		query += "child, birth_year, examination.date from child, examination where examination.child = child.id";
+		query += "child, birth_year, examination.date, examination.id from child, examination where examination.child = child.id";
 		ResultSet result = this.fetchResult(query.toString());
 
 		try
@@ -233,12 +233,7 @@ public class Program
 				double ageAtExamination = Age.getAgeAtExamination(birthYear, examinationDate);
 				double ageSimilarity = Age.calculateSimilarity(ageAtExamination, age);
 
-				// fetch standing columns
-				ResultSet standingAid_result = this.fetchResult("select StandingSelf, UsesHelp, DaysPerWeek, TimesPerDay from standing");
-				Utility utility = new Utility();
-				utility.similarityStanding(standingAid_result);
-				
-				
+
 				// fetch results based on GFMCS in a table (like in database)
 				ResultSet GMFCS_result = this.fetchResult(
 						"select gmfcs from child, examination where examination.child = child.id and child.id = "
@@ -270,8 +265,13 @@ public class Program
 						int childId = result.getInt(nrOfColumns + 1);
 						SimilarityHistoryComplete simHistory = new SimilarityHistoryComplete(childId);
 						double ageTotal = ageSimilarity * 0.0;
-
-						similarity += ageTotal;
+						
+						// fetch standing columns
+						ResultSet standingAid_result = this.fetchResult("select * from standing where examinationID = " + result.getInt(nrOfColumns + 4));
+						
+						// Add standing similarity to total similarity
+						similarity += Utility.similarityStanding(standingAid_result, standing);
+						
 						simHistory.addHistory(
 								new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageTotal));
 						for (int i = 0; i < nrOfColumns; i++)
@@ -403,7 +403,7 @@ public class Program
 		{
 			int nrOfColumns = MetaHandler.getNrOfColumns();
 			String query = "select " + MetaHandler.getColumnNamesCommaSeparated()
-					+ "date, birth_year, gmfcs from examination, child where child = " + child.getId()
+					+ "date, birth_year, gmfcs, UsesHelp from examination, child, standing where child = " + child.getId()
 					+ " and examination.child = child.id order by date desc limit 1";
 			ResultSet result = this.fetchResult(query.toString());
 			result.next();
@@ -425,7 +425,7 @@ public class Program
 			Date birthDate = Examination.birthYearToDate(result.getInt(nrOfColumns + 2));
 			double ageAtExamination = Examination.ageDiffToDouble(examinationDate, birthDate);
 			this.fetchSimilar(values, (int) ageAtExamination, this.getChildsExaminationsHistory(child.getId()),
-					result.getInt(nrOfColumns + 3));
+					result.getInt(nrOfColumns + 3), result.getString(nrOfColumns + 4));
 		}
 		catch (Exception e)
 		{
