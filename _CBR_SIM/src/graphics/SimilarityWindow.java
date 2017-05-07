@@ -56,7 +56,7 @@ public class SimilarityWindow extends JFrame
 		panel.add(label);
 
 		JPanel currentPatientValuesPanel = new JPanel();
-		currentPatientValuesPanel.setLayout(new GridLayout(1, nrOfColumns));
+		currentPatientValuesPanel.setLayout(new GridLayout(1, nrOfColumns)); //nrofcol 1 mer än tidigare
 		label = new JLabel("Din patients värde");
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());

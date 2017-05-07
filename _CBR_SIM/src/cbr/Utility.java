@@ -59,9 +59,8 @@ public class Utility
 		{
 			System.out.println(e);
 		}
-		double dub = 0.0;
 		
-		return dub;
+		return 0.0;
 	}
 	
 	private static double calculateHoursPerWeek (String days, String hours)

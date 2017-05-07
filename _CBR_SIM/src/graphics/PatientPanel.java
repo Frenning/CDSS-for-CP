@@ -37,10 +37,11 @@ public class PatientPanel extends JPanel
 		valuePanel = new PatientValuePanel(history.relevant().getValues(), true);
 		valuePanel.setParent(this);
 		add(this.patientLabel("Din patient", JLabel.LEFT));
-		add(this.patientLabel("GMFCS: " + GMFCS, JLabel.RIGHT));
-		add(this.patientLabel(new String("Använder ståhjälpmedel: " + standingInformation[0]), JLabel.RIGHT));
-		add(this.patientLabel(new String("Dagar per vecka: " + standingInformation[1]), JLabel.RIGHT));
-		add(this.patientLabel(new String("Timmar per dag: " + standingInformation[2]), JLabel.RIGHT));
+		//Label doesn't render tab so 8 spaces is used
+		add(this.patientLabel("GMFCS: " + GMFCS + "        " 
+				+ new String("Använder ståhjälpmedel: " + standingInformation[0]) + "        " 
+				+ new String("Dagar per vecka: " + standingInformation[1]) + "        " 
+				+ new String("Timmar per dag: " + standingInformation[2]), JLabel.RIGHT));
 		add(valuePanel);
 		add(historyPanel);
 		treatmentLabel = this.treatmentLabel();
@@ -65,10 +66,11 @@ public class PatientPanel extends JPanel
 		valuePanel = new PatientValuePanel(history.relevant().getValues(), true);
 		valuePanel.setParent(this);
 		add(this.patientLabel());
-		add(this.patientLabel(new String("GMFCS: " + history.last().GMFCS), JLabel.RIGHT));
-		add(this.patientLabel(new String("Använder ståhjälpmedel: " + history.relevant().standingInformation[0]), JLabel.RIGHT));
-		add(this.patientLabel(new String("Dagar per vecka: " + history.relevant().standingInformation[1]), JLabel.RIGHT));
-		add(this.patientLabel(new String("Timmar per dag: " + history.relevant().standingInformation[2]), JLabel.RIGHT));
+		//Label doesn't render tab so 8 spaces is used
+		add(this.patientLabel(new String("GMFCS: " + history.last().GMFCS) + "        "
+		+ new String("Använder ståhjälpmedel: " + history.relevant().standingInformation[0]) + "        "
+		+ new String("Dagar per vecka: " + history.relevant().standingInformation[1]) + "        "
+		+ new String("Timmar per dag: " + history.relevant().standingInformation[2]), JLabel.RIGHT));
 		add(valuePanel);
 		add(historyPanel);
 		treatmentLabel = this.treatmentLabel();

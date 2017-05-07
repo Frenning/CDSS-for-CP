@@ -69,6 +69,7 @@ public class Window extends JFrame
 		JRadioButton btn2 = new JRadioButton("Nej");
 		standingBulletGroup.add(btn1);
 		standingBulletGroup.add(btn2);
+		btn2.setSelected(true);
 		standingBulletsFrame.add(standingLabel);
 		standingBulletsFrame.add(btn1);
 		standingBulletsFrame.add(btn2);
@@ -132,7 +133,7 @@ public class Window extends JFrame
 		{
 			if(standingBulletGroup.getSelection() == null || standingHoursBulletGroup == null || standingDaysBulletGroup == null)
 				return;
-			int[] values = new int[panels.length + 1];
+			int[] values = new int[panels.length];
 			for (int i = 0; i < panels.length; i++)
 			{
 				values[i] = panels[i].getSliderValue();
