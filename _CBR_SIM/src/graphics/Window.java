@@ -31,7 +31,6 @@ public class Window extends JFrame
 	private Program program;
 	private SliderPanel[] panels = new SliderPanel[MetaHandler.getNrOfColumns()];
 	private SliderPanel agePanel = new SliderPanel(new PanelData("birth_year", "Ålder", Age.MIN, Age.MAX));
-	private SliderPanel daysPerWeekPanel = new SliderPanel(new PanelData("daysPerWeek", "Använder ståhjälpmedel: Dagar per vecka", 0, 7));
 	private SliderPanel gmfcsPanel = new SliderPanel(new PanelData("gmfcs", "GMFCS", 1, 5));
 	private JPanel standingBulletsFrame = new JPanel();
 	private JPanel standingHoursBulletsFrame = new JPanel();
@@ -110,7 +109,6 @@ public class Window extends JFrame
 		add(standingBulletsFrame);
 		add(standingHoursBulletsFrame);
 		add(standingDaysBulletsFrame);
-		add(daysPerWeekPanel);
 		PanelData[] data = MetaHandler.getPanelData();
 		for (int i = 0; i < data.length; i++)
 		{
@@ -120,7 +118,7 @@ public class Window extends JFrame
 		}
 		add(button);
 		button.addActionListener(new ButtonListenerShow());
-		setSize(new Dimension(800, 1000));
+		setSize(new Dimension(800, 900));
 		setTitle("Decision support - Din patient");
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
