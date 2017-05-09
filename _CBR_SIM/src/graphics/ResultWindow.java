@@ -28,7 +28,7 @@ import graphics.Window.SimGraphWindow;
 public class ResultWindow extends JFrame
 {
 	private int[] values;
-	private int age;
+	private double age;
 	private Vector<ExaminationHistory> histories;
 	private JPanel panel = new JPanel();
 	private JScrollPane scroll = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -37,7 +37,7 @@ public class ResultWindow extends JFrame
 	private JMenu menu = new JMenu("Arkiv");
 	private JMenuItem item = new JMenuItem("Visa similarity metrics");
 
-	public ResultWindow(Vector<ExaminationHistory> histories, ExaminationHistory patientHistory, int[] values, int age, int GMFCS_currentPatient, String[] standingInformation)
+	public ResultWindow(Vector<ExaminationHistory> histories, ExaminationHistory patientHistory, int[] values, double age, int GMFCS_currentPatient, String[] standingInformation)
 	{
 		menu.add(item);
 		menuBar.add(menu);
@@ -107,7 +107,7 @@ public class ResultWindow extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			new SimilarityWindow(histories, values, age);
+			new SimilarityWindow(histories, values, (int)age);
 		}
 	}
 

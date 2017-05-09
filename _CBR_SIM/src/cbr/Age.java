@@ -54,17 +54,10 @@ public class Age
 				Examination.birthYearToDate(birthYear));
 	}
 	
-	public static double calculateAgeSim(int currentAge, int otherAge)
+	public static double calculateAgeSim(double currentAge, double otherAge, SimCalculator maxAgeDiffCalculator)
 	{
-		int similarityFallOff = 1;
-		SimCalculator maxAgeDiffCalculator = new SimCalculator();
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(7, 1));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(8, 2));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(10, 3));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(13, 3));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(16, 4));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(20, 5));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(25, 5));
+		int similarityFallOff = 2;
+		double maxSimilarity = 2.5;
 		
 		double maxAgeDiff = maxAgeDiffCalculator.getWeight(currentAge);
 		
@@ -74,11 +67,11 @@ public class Age
 		
 		double lowestAge = maxAgeDiffCalculator.calculateLowestAgeDiff(currentAge);
 		simCalculator.addBreakpoint(new Breakpoint(lowestAge-similarityFallOff, 0));
-		simCalculator.addBreakpoint(new Breakpoint(lowestAge, 1));
-		simCalculator.addBreakpoint(new Breakpoint(currentAge+maxAgeDiff, 1));
+		simCalculator.addBreakpoint(new Breakpoint(lowestAge, maxSimilarity));
+		simCalculator.addBreakpoint(new Breakpoint(currentAge+maxAgeDiff, maxSimilarity));
 		simCalculator.addBreakpoint(new Breakpoint(currentAge+maxAgeDiff+similarityFallOff, 0));
 		
-		return simCalculator.getWeight(currentAge, otherAge);
+		return simCalculator.getWeight(otherAge);
 	}
 
 	public static void showAgeSimWindow()

@@ -62,7 +62,11 @@ public class SimCalculator
 				break;
 			}
 		}
-		if (indexOfHigher == 0)
+		if (indexOfHigher == -1)
+		{
+			return 0;
+		}
+		else if (indexOfHigher == 0)
 		{
 			return this.breakpoints.get(indexOfHigher).getSimilarity();
 		}

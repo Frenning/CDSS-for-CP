@@ -45,7 +45,7 @@ public class Examination
 		}
 	}
 
-	public Examination(int[] values, int age)
+	public Examination(int[] values, double age)
 	{
 		this.plantar[0] = values[0];
 		this.plantar[1] = values[1];

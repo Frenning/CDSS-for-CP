@@ -5,20 +5,18 @@ import java.sql.ResultSet;
 public class Utility
 {
 	//standingInformation_currentPatient: [0] = UsesHelp, [1] = DaysPerWeek, [2] = HoursPerDay
-	public static double similarityStanding (ResultSet resultSet, String [] standingInformation_currentPatient)
+	public static double similarityStanding (String [] otherPatient, String [] curPatient)
 	{
 		try{
 			// Om raden är tom, returnera similarity 0.0
-			if (!resultSet.next())
+			if (otherPatient == null)
 			{
 				return 0.0;
 			}
 			else
 			{
-				String standing_otherPatient = resultSet.getString("UsesHelp");
-				
 				// Om det inte stämmer överens mellan patienterna om de använder ståhjälpmedel
-				if(!standing_otherPatient.equals(standingInformation_currentPatient[0]))
+				if(!otherPatient[0].equals(curPatient[0]))
 				{
 					return 0.0;
 				}
@@ -27,17 +25,15 @@ public class Utility
 					// Vikten för hur mkt det spelar roll om båda patienterna använder ståhjälpmedel
 					double similarity = 0.1;
 					// Kolla skillnaden i hur länge de använd ståhjälp och addera på similarityn beroende på hur lika de är.
-					String standingDays_otherPatient = resultSet.getString("DaysPerWeek");
-					String standingHours_otherPatient = resultSet.getString("HoursPerDay");
 					
 					//Check so that no values are null, and if they are then don't add any more similarity.
-					if(standingDays_otherPatient == null || standingHours_otherPatient == null || 
-						standingInformation_currentPatient[1] == null || standingInformation_currentPatient[2] == null)
+					if(otherPatient[1] == null || otherPatient[2] == null || 
+							curPatient[1] == null || curPatient[2] == null)
 						return similarity;
 					
 					// Get the hours per week for each patient
-					double currentHrsPerWeek = calculateHoursPerWeek(standingInformation_currentPatient[1], standingInformation_currentPatient[2]);
-					double otherHrsPerWeek = calculateHoursPerWeek(standingDays_otherPatient, standingHours_otherPatient);
+					double currentHrsPerWeek = calculateHoursPerWeek(curPatient[1], curPatient[2]);
+					double otherHrsPerWeek = calculateHoursPerWeek(otherPatient[1], otherPatient[2]);
 					
 					double hoursDifference = Math.abs(currentHrsPerWeek - otherHrsPerWeek);
 					
