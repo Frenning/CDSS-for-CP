@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.util.Collections;
 import java.util.Vector;
 
+import javax.security.auth.x500.X500Principal;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -22,6 +23,10 @@ public class SimCalculator
 	private int height = 500;
 	private int paddingY = 50;
 
+	public SimCalculator()
+	{
+		
+	}
 	public SimCalculator(double weight, double maxDiff, String description)
 	{
 		this.weight = weight;
@@ -45,6 +50,38 @@ public class SimCalculator
 		}
 		Collections.sort(this.breakpoints);
 	}
+	
+	public double getWeight(double current)
+	{
+		int indexOfHigher = -1;
+		for (int i = 0; i < this.breakpoints.size(); i++)
+		{
+			if (this.breakpoints.get(i).getX() >= current)
+			{
+				indexOfHigher = i;
+				break;
+			}
+		}
+		if (indexOfHigher == 0)
+		{
+			return this.breakpoints.get(indexOfHigher).getSimilarity();
+		}
+		else
+		{
+			double lowerX = this.breakpoints.get(indexOfHigher - 1).getX(); // 1
+			double higherX = this.breakpoints.get(indexOfHigher).getX(); // 1,5
+			double distanceX = higherX - lowerX;	// 0,5
+			double diffToLowerInPercent = current - lowerX;	// 0,2
+			diffToLowerInPercent /= distanceX;	// 0,2 / 0,5 = 0,4
+			double similarityLower = this.breakpoints.get(indexOfHigher - 1).getSimilarity();	// 1
+			double distanceSimilarity = this.breakpoints.get(indexOfHigher).getSimilarity() - similarityLower;	// 0 - 1 = -1
+			double similarity = similarityLower + (diffToLowerInPercent * distanceSimilarity); // 1 + (0,4 * -1) = 0,6
+			return similarity; // 0,6
+			
+			// ((((current-lowerX)/distanceX) * distanceSimilarity) + similarityLower) + current = 11.5
+			// ((((current - 8) / 2) * 1) + 2) + current = 11.5
+		}
+	}
 
 	public double getWeight(double current, double other)
 	{
@@ -64,15 +101,52 @@ public class SimCalculator
 		}
 		else
 		{
-			double lowerX = this.breakpoints.get(indexOfHigher - 1).getX();
-			double higherX = this.breakpoints.get(indexOfHigher).getX();
-			double distanceX = higherX - lowerX;
-			double diffToLowerInPercent = diff - lowerX;
-			diffToLowerInPercent /= distanceX;
-			double similarityLower = this.breakpoints.get(indexOfHigher - 1).getSimilarity();
-			double distanceSimilarity = this.breakpoints.get(indexOfHigher).getSimilarity() - similarityLower;
-			double similarity = similarityLower + (diffToLowerInPercent * distanceSimilarity);
-			return similarity;
+			double lowerX = this.breakpoints.get(indexOfHigher - 1).getX(); // 1
+			double higherX = this.breakpoints.get(indexOfHigher).getX(); // 1,5
+			double distanceX = higherX - lowerX;	// 0,5
+			double diffToLowerInPercent = diff - lowerX;	// 0,2
+			diffToLowerInPercent /= distanceX;	// 0,2 / 0,5 = 0,4
+			double similarityLower = this.breakpoints.get(indexOfHigher - 1).getSimilarity();	// 1
+			double distanceSimilarity = this.breakpoints.get(indexOfHigher).getSimilarity() - similarityLower;	// 0 - 1 = -1
+			double similarity = similarityLower + (diffToLowerInPercent * distanceSimilarity); // 1 + (0,4 * -1) = 0,6
+			return similarity; // 0,6
+		}
+	}
+	
+	public double calculateLowestAgeDiff(double actualAge)
+	{
+		int indexOfHigher = -1;
+		for (int i = 0; i < this.breakpoints.size(); i++)
+		{
+			if (this.breakpoints.get(i).getX() >= actualAge)
+			{
+				indexOfHigher = i;
+				break;
+			}
+		}
+		if (indexOfHigher == 0)
+		{
+			return actualAge-1;
+		}
+		else
+		{
+			indexOfHigher--;
+			if(indexOfHigher == 0)
+			{
+				return this.breakpoints.get(indexOfHigher).getX();
+			}
+			double lowerX = this.breakpoints.get(indexOfHigher - 1).getX(); // 1
+			double higherX = this.breakpoints.get(indexOfHigher).getX(); // 1,5
+			double distanceX = higherX - lowerX;	// 0,5
+			double diffToLowerInPercent = actualAge - lowerX;	// 0,2
+			diffToLowerInPercent /= distanceX;	// 0,2 / 0,5 = 0,4
+			double similarityLower = this.breakpoints.get(indexOfHigher - 1).getSimilarity();	// 1
+			double distanceSimilarity = this.breakpoints.get(indexOfHigher).getSimilarity() - similarityLower;	// 0 - 1 = -1
+			double similarity = similarityLower + (diffToLowerInPercent * distanceSimilarity); // 1 + (0,4 * -1) = 0,6
+			
+			//Calculates lowest age difference for actualAge, for example if actualAge = 11.5, current will be = 9
+			double current = (distanceSimilarity * lowerX + actualAge * distanceX - similarityLower * distanceX) / (distanceSimilarity + distanceX);
+			return current; // 0,6
 		}
 	}
 

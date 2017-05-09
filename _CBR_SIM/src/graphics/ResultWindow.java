@@ -54,7 +54,7 @@ public class ResultWindow extends JFrame
 
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-		topPanel.setPreferredSize(new Dimension(PatientPanel.WIDTH + 300, 1000));
+		topPanel.setPreferredSize(new Dimension(PatientPanel.WIDTH + 300, 750));
 		add(topPanel);
 		topPanel.add(descriptionPanel()); // A panel in the top that is not
 											// scrolled

@@ -290,46 +290,43 @@ public class Program
 				{
 					// Check so that age of examination of matching patient is
 					// in the same age-group as current patient
-					if (Age.isSameAgeGroup(age, (int) ageAtExamination))
+					double similarity = Age.calculateAgeSim(age, (int) ageAtExamination);
+					int childId = result.getInt(nrOfColumns + 1);
+					SimilarityHistoryComplete simHistory = new SimilarityHistoryComplete(childId);
+					double ageTotal = ageSimilarity * 0.0;
+					
+					// fetch standing columns
+					ResultSet standingAid_result = this.fetchResult("select * from standing where examinationID = " + result.getInt(nrOfColumns + 4));
+					
+					// Add standing similarity to total similarity
+					similarity += Utility.similarityStanding(standingAid_result, standingInformation);
+					
+					simHistory.addHistory(
+							new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageTotal));
+					for (int i = 0; i < nrOfColumns; i++)
 					{
-						double similarity = 0;
-						int childId = result.getInt(nrOfColumns + 1);
-						SimilarityHistoryComplete simHistory = new SimilarityHistoryComplete(childId);
-						double ageTotal = ageSimilarity * 0.0;
-						
-						// fetch standing columns
-						ResultSet standingAid_result = this.fetchResult("select * from standing where examinationID = " + result.getInt(nrOfColumns + 4));
-						
-						// Add standing similarity to total similarity
-						similarity += Utility.similarityStanding(standingAid_result, standingInformation);
-						
-						simHistory.addHistory(
-								new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageTotal));
-						for (int i = 0; i < nrOfColumns; i++)
-						{
-							String valuePrep = result.getString(i + 1);
-							int value;
-							if (valuePrep == null)
-							{ // Data is missing. Use rounded average. Todo:
-								// Inform
-								// user that average is used
-								value = MetaHandler.getAverage(i);
-							}
-							else
-							{
-								value = result.getInt(i + 1);
-							}
-							double columnSimilarity = MetaHandler.calculateSimilarity(i, values[i], value);
-							double weight = MetaHandler.getWeight(i);
-							double theSim = columnSimilarity * weight;
-							simHistory.addHistory(new SimilarityHistory(MetaHandler.getColumnsName(i), values[i], value,
-									columnSimilarity, theSim));
-							similarity += theSim;
+						String valuePrep = result.getString(i + 1);
+						int value;
+						if (valuePrep == null)
+						{ // Data is missing. Use rounded average. Todo:
+							// Inform
+							// user that average is used
+							value = MetaHandler.getAverage(i);
 						}
-						simHistory.setTotalSimilarity(similarity);
-						similarities.add(new Similarity(result.getInt(nrOfColumns + 1), similarity, examinationDate,
-								simHistory));
+						else
+						{
+							value = result.getInt(i + 1);
+						}
+						double columnSimilarity = MetaHandler.calculateSimilarity(i, values[i], value);
+						double weight = MetaHandler.getWeight(i);
+						double theSim = columnSimilarity * weight;
+						simHistory.addHistory(new SimilarityHistory(MetaHandler.getColumnsName(i), values[i], value,
+								columnSimilarity, theSim));
+						similarity += theSim;
 					}
+					simHistory.setTotalSimilarity(similarity);
+					similarities.add(new Similarity(result.getInt(nrOfColumns + 1), similarity, examinationDate,
+							simHistory));
 				}
 			}
 			Collections.sort(similarities);

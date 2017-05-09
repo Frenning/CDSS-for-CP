@@ -19,6 +19,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import examination.Examination;
 import similarity.AgeSimTableModel;
+import similarity.Breakpoint;
+import similarity.SimCalculator;
 
 public class Age
 {
@@ -26,7 +28,7 @@ public class Age
 	public static int MAX = 20;
 	private static int range = MAX - MIN;
 	private static AgeSimTableModel ageSimTableModel = new AgeSimTableModel();
-
+	
 	// Todo hämta från
 	public static double calculateSimilarity(double ageAtExamination, int age)
 	{
@@ -52,51 +54,31 @@ public class Age
 				Examination.birthYearToDate(birthYear));
 	}
 	
-	public static boolean isSameAgeGroup(int currentAge, int otherAge)
+	public static double calculateAgeSim(int currentAge, int otherAge)
 	{
+		int similarityFallOff = 1;
+		SimCalculator maxAgeDiffCalculator = new SimCalculator();
+		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(7, 1));
+		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(8, 2));
+		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(10, 3));
+		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(13, 3));
+		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(16, 4));
+		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(20, 5));
+		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(25, 5));
 		
-		switch(currentAge)
-		{
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 6:
-		case 7:
-			return otherAge == currentAge;
-		case 8:
-			return (8 == otherAge || otherAge == 9);
-		case 9:
-			return (8 <= otherAge && otherAge <= 10);
-		case 10:
-			return (9 <= otherAge && otherAge <= 12);
-		case 11:
-			return (10 <= otherAge && otherAge <= 13);
-		case 12:
-		case 13:
-		case 14:
-		case 15:
-		case 16:
-		case 17:
-		case 18:
-		case 19:
-			return (currentAge-2 <= otherAge && otherAge <= currentAge+2);
-		case 20:
-		case 21:
-		case 22:
-			return (currentAge-(currentAge-20)-2 <= otherAge && otherAge <= currentAge+5);			//exempel: 21-(21-20)-2 = 18
-		case 23:
-		case 24:
-		case 25:
-		case 26:
-		case 27:
-		case 28:
-		case 29:
-		case 30:
-			return (currentAge-5 <= otherAge && otherAge <= currentAge+5);
-		}
-		return false;
+		double maxAgeDiff = maxAgeDiffCalculator.getWeight(currentAge);
+		
+		// Exempel: currentAge = 9. maxAgeDiff är då = 2.5. ->
+		// -> breakPoint nr 1 = 5.5, breakpoint nr 2 = 6.5, breakpoint nr 3 = 11.5 och breakpoint nr 4 = 12.5
+		SimCalculator simCalculator = new SimCalculator();
+		
+		double lowestAge = maxAgeDiffCalculator.calculateLowestAgeDiff(currentAge);
+		simCalculator.addBreakpoint(new Breakpoint(lowestAge-similarityFallOff, 0));
+		simCalculator.addBreakpoint(new Breakpoint(lowestAge, 1));
+		simCalculator.addBreakpoint(new Breakpoint(currentAge+maxAgeDiff, 1));
+		simCalculator.addBreakpoint(new Breakpoint(currentAge+maxAgeDiff+similarityFallOff, 0));
+		
+		return simCalculator.getWeight(currentAge, otherAge);
 	}
 
 	public static void showAgeSimWindow()
