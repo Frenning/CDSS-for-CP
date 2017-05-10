@@ -27,7 +27,28 @@ public class Age
 	public static int MIN = 2;
 	public static int MAX = 20;
 	private static int range = MAX - MIN;
+	
+	public static int similarityFallOff = 2;
+	public static double maxSimilarity = 0.5;
+	
 	private static AgeSimTableModel ageSimTableModel = new AgeSimTableModel();
+	public static SimCalculator simCalculator = new SimCalculator();
+	public static SimCalculator maxAgeDiffCalculator = new SimCalculator();
+	
+	public static void addBreakPoints(double age)
+	{
+		double maxAgeDiff = maxAgeDiffCalculator.getWeight(age);
+		double lowestAge = maxAgeDiffCalculator.calculateLowestAgeDiff(age);
+		
+		simCalculator = new SimCalculator();
+		simCalculator.addBreakpoint(new Breakpoint(lowestAge-similarityFallOff, 0));
+		simCalculator.addBreakpoint(new Breakpoint(lowestAge, maxSimilarity));
+		simCalculator.addBreakpoint(new Breakpoint(age, maxSimilarity));
+		simCalculator.addBreakpoint(new Breakpoint(age+maxAgeDiff, maxSimilarity));
+		simCalculator.addBreakpoint(new Breakpoint(age+maxAgeDiff+similarityFallOff, 0));
+		
+		MetaHandler.ageCalculator = simCalculator;
+	}
 	
 	// Todo hämta från
 	public static double calculateSimilarity(double ageAtExamination, int age)
@@ -54,23 +75,11 @@ public class Age
 				Examination.birthYearToDate(birthYear));
 	}
 	
-	public static double calculateAgeSim(double currentAge, double otherAge, SimCalculator maxAgeDiffCalculator)
+	public static double calculateAgeSim(double otherAge)
 	{
-		int similarityFallOff = 2;
-		double maxSimilarity = 2.5;
-		
-		double maxAgeDiff = maxAgeDiffCalculator.getWeight(currentAge);
-		
 		// Exempel: currentAge = 9. maxAgeDiff är då = 2.5. ->
 		// -> breakPoint nr 1 = 5.5, breakpoint nr 2 = 6.5, breakpoint nr 3 = 11.5 och breakpoint nr 4 = 12.5
-		SimCalculator simCalculator = new SimCalculator();
-		
-		double lowestAge = maxAgeDiffCalculator.calculateLowestAgeDiff(currentAge);
-		simCalculator.addBreakpoint(new Breakpoint(lowestAge-similarityFallOff, 0));
-		simCalculator.addBreakpoint(new Breakpoint(lowestAge, maxSimilarity));
-		simCalculator.addBreakpoint(new Breakpoint(currentAge+maxAgeDiff, maxSimilarity));
-		simCalculator.addBreakpoint(new Breakpoint(currentAge+maxAgeDiff+similarityFallOff, 0));
-		
+
 		return simCalculator.getWeight(otherAge);
 	}
 

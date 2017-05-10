@@ -114,12 +114,22 @@ public class SimilarityHistoryComplete
 			clickLabels = new JLabel[histories.size()];
 			for (int i = 0; i < histories.size(); i++)
 			{
-				clickLabels[i] = new JLabel(String.format("%.3f", histories.get(i).getSimilarity()));
-				clickLabels[i].setPreferredSize(new Dimension(width, height));
-				clickLabels[i].setBorder(new EtchedBorder());
-				clickLabels[i].addMouseListener(new MouseClickListener());
-				clickLabels[i].setCursor(new Cursor(Cursor.HAND_CURSOR));
-				add(clickLabels[i]);
+				if(i == 1)
+				{
+					label = new JLabel(String.format("%.3f", histories.get(i).getSimilarity()));
+					label.setPreferredSize(new Dimension(width, height));
+					label.setBorder(new EtchedBorder());
+					add(label);
+				}
+				else
+				{
+					clickLabels[i] = new JLabel(String.format("%.3f", histories.get(i).getSimilarity()));
+					clickLabels[i].setPreferredSize(new Dimension(width, height));
+					clickLabels[i].setBorder(new EtchedBorder());
+					clickLabels[i].addMouseListener(new MouseClickListener());
+					clickLabels[i].setCursor(new Cursor(Cursor.HAND_CURSOR));
+					add(clickLabels[i]);
+				}
 			}
 			label = new JLabel();
 			label.setPreferredSize(new Dimension(width, height));
@@ -163,16 +173,10 @@ public class SimilarityHistoryComplete
 				}
 				if (index > 0)
 				{
-					MetaHandler.showSimCalculatorGraph(index - 1, histories.get(index), "Patient " + childId); // index-1
-																												// because
-																												// of
-																												// age
-																												// not
-																												// in
-																												// the
-																												// array
-																												// used
-																												// (yet)
+					MetaHandler.showSimCalculatorGraph(index - 1, histories.get(index), "Patient " + childId); // index-1 because of age not in the array used (yet)
+				}
+				else {
+					MetaHandler.ageCalculator.showWindow(histories.get(0), "Patient " + childId);
 				}
 			}
 		}

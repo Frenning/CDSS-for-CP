@@ -19,6 +19,7 @@ public class MetaHandler
 	private static PanelData[] data;
 	private static int[] averages;
 	private static SimCalculator[] calculators;
+	public static SimCalculator ageCalculator;
 
 	public static void init()
 	{
@@ -43,7 +44,7 @@ public class MetaHandler
 		weights = new double[nrOfColumns];
 		averages = new int[nrOfColumns];
 		data = new PanelData[nrOfColumns];
-		calculators = new SimCalculator[nrOfColumns];
+		calculators = new SimCalculator[nrOfColumns+1];
 		for (int i = 0; i < nrOfColumns; i++)
 		{
 			String[] cells = lines.get(i).split(",");
@@ -60,6 +61,8 @@ public class MetaHandler
 			columnNames[i] = columnName;
 			descriptions[i] = description;
 		}
+		// Adds an extra calculator for the graph (ful-lösning för ett problem med kolumnantal)
+		calculators[nrOfColumns] = new SimCalculator(0, 0, "");
 
 		// Reading values for similarity calculations
 		lines = new Vector<String>();
@@ -87,6 +90,8 @@ public class MetaHandler
 				calculators[i].addBreakpoints(breakpoints);
 			}
 		}
+		// Adds an extra calculator for the graph (ful-lösning för ett problem med kolumnantal)
+		calculators[nrOfColumns].addBreakpoints(lines.get(nrOfColumns-1).split(","));
 	}
 
 	public static String[] getColumnNames()

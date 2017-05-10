@@ -137,7 +137,7 @@ public class SimCalculator
 			indexOfHigher--;
 			if(indexOfHigher == 0)
 			{
-				return this.breakpoints.get(indexOfHigher).getX();
+				return actualAge-1;
 			}
 			double lowerX = this.breakpoints.get(indexOfHigher - 1).getX(); // 1
 			double higherX = this.breakpoints.get(indexOfHigher).getX(); // 1,5
@@ -215,10 +215,19 @@ public class SimCalculator
 				{
 					double value = start + (i * step);
 					int x = (int) ((i * spaceX) + paddingX);
-					g.setColor(Color.gray);
+					g.setColor(Color.LIGHT_GRAY);
 					g.drawLine(x, paddingY, x, height);
 					g.setColor(Color.black);
 					g.drawString(String.format("%.2f", value), x, height + paddingY - (paddingY / 3));
+				}
+				for (double i = 0; i <= 1; i += 0.1)
+				{
+					int x = (int) (paddingX / 3);
+					int y = (int) (height - (i * (height - paddingY)));
+					g.setColor(Color.black);
+					g.drawString(String.format("%.1f", i), x, y);
+					g.setColor(Color.LIGHT_GRAY);
+					g.drawLine(paddingX, y, width + paddingX, y);
 				}
 				double convertX = width / span;
 				double lastX = paddingX;
@@ -232,19 +241,18 @@ public class SimCalculator
 					lastX = currentX;
 					lastY = currentY;
 				}
-				for (double i = 0; i <= 1; i += 0.1)
-				{
-					int x = (int) (paddingX / 3);
-					int y = (int) (height - (i * (height - paddingY)));
-					g.setColor(Color.black);
-					g.drawString(String.format("%.1f", i), x, y);
-					g.setColor(Color.gray);
-					g.drawLine(paddingX, y, width + paddingX, y);
-				}
+
 				if (this.history != null)
 				{
-					double x = ((history.getDifference() - start) * convertX) + paddingX;
+					double x;
 					double y = (height) - (history.getSimilarity() * (height - paddingY));
+					if(history.getDescription() == "ålder")
+					{
+						x = ((history.getValueFromCaseBase() - start) * convertX) + paddingX;
+					}
+					else 
+						x = ((history.getDifference() - start) * convertX) + paddingX;
+					
 					int diameter = 10;
 					g.drawOval(((int) x - (diameter / 2)), ((int) y) - (diameter / 2), diameter, diameter);
 					// Todo kanske rita hjälplinjer också

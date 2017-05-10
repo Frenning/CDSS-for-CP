@@ -43,6 +43,10 @@ public class SimilarityWindow extends JFrame
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		panel.add(label);
+		label = new JLabel("Help with standing");
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		panel.add(label);
 		for (String columnName : MetaHandler.getColumnNames())
 		{
 			label = new JLabel(columnName);
@@ -71,6 +75,12 @@ public class SimilarityWindow extends JFrame
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		currentPatientValuesPanel.add(label);
+		
+		//Add empty label for standing parameter
+		label = new JLabel("-");
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		currentPatientValuesPanel.add(label);
 		for (String data : svalues)
 		{
 			label = new JLabel(data);
@@ -89,10 +99,17 @@ public class SimilarityWindow extends JFrame
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);
-		label = new JLabel(String.format("%.3f", 0.0));
+		
+		//Add empty label for age and standing parameters
+		label = new JLabel("-");
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);
+		label = new JLabel("-");
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		weightPanel.add(label);
+		
 		for (double weight : MetaHandler.getWeighs())
 		{
 			label = new JLabel(String.format("%.3f", weight));

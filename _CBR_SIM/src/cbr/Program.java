@@ -29,19 +29,19 @@ public class Program
 	private static int HISTORY_SIZE = 10;
 	private static int MIN_NR_OF_EXAMINATIONS_AFTER = 2;
 	private Connection connection = null;
-	SimCalculator maxAgeDiffCalculator = new SimCalculator();
+	
 
 	public Program()
 	{
 		MetaHandler.init();
 		
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(7, 1));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(8, 2));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(10, 3));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(13, 3));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(16, 4));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(20, 5));
-		maxAgeDiffCalculator.addBreakpoint(new Breakpoint(25, 5));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(7, 1));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(8, 2));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(10, 3));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(13, 3));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(16, 4));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(20, 5));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(25, 5));
 		
 		this.connect();
 		new Window(this);
@@ -62,21 +62,23 @@ public class Program
 	public void fetchSimilar(int[] values, double age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient, String [] standingInformation)
 	{
 		String query = "select " + MetaHandler.getColumnNamesCommaSeparated();
-		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient, standingInformation);
+		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient, standingInformation, currentPatientHistory);
 		Vector<ExaminationHistory> histories = this.getDetailedInfo(similar);
 		new ResultWindow(histories, currentPatientHistory, values, age, GMFCS_currentPatient, standingInformation);
 	}
 
 	private ExaminationHistory getChildsExaminationsHistory(int childId)
 	{
-		String query = "select " + MetaHandler.getColumnNamesCommaSeparated()
-				+ " examination.date, examination.id from child, examination where examination.child = child.id and child.id = "
-				+ childId + " order by examination.date";
 		try
 		{
 			ResultSet result = this.fetchResult("select * from child where id = " + childId);
 			result.next();
-			ExaminationHistory history = new ExaminationHistory(result.getInt(1), result.getInt(2), result.getInt(3));
+			ExaminationHistory history = new ExaminationHistory(result.getInt(1), result.getInt(2), result.getInt(3));		
+			
+			String query = "select " + MetaHandler.getColumnNamesCommaSeparated()
+			+ " examination.date, examination.id from child, examination where examination.child = child.id and child.id = "
+			+ childId + " order by examination.date";
+			
 			result = this.fetchResult(query);
 			while (result.next())
 			{
@@ -259,7 +261,7 @@ public class Program
 	// values
 	// Returns a list with the examinations that are most similar
 
-	private Vector<Similarity> fetchMostSimilar(int[] values, double age, String query, int GMFCS_currentPatient, String [] standingInformation)
+	private Vector<Similarity> fetchMostSimilar(int[] values, double age, String query, int GMFCS_currentPatient, String [] standingInformation, ExaminationHistory currentPatientHistory)
 	{
 		// getNrOfCol är lines i meta.csv
 		Vector<Similarity> similarities = new Vector<Similarity>();
@@ -272,6 +274,9 @@ public class Program
 		try
 		{
 			int nrOfColumns = MetaHandler.getNrOfColumns();
+			
+			//Add breakpoints needed to calculate similarity for current age
+			Age.addBreakPoints(age);
 		
 			while(result.next())
 			{
@@ -283,7 +288,10 @@ public class Program
 				// large
 				
 				// Calculate age similarity
-				double similarity = Age.calculateAgeSim(age, ageAtExamination, maxAgeDiffCalculator);
+				Age.similarityFallOff = 2;
+				Age.maxSimilarity = 0.5;
+				Age.addBreakPoints(age);
+				double similarity = Age.calculateAgeSim(ageAtExamination);
 				int childId = result.getInt(nrOfColumns + 1);
 				SimilarityHistoryComplete simHistory = new SimilarityHistoryComplete(childId);
 				double ageSimilarity = similarity;
@@ -294,10 +302,21 @@ public class Program
 				otherStandingInfo[2]=result.getString("HoursPerDay");
 				
 				// Add standing similarity to total similarity
-				similarity += Utility.similarityStanding(otherStandingInfo, standingInformation);
+				double standingSimilarity = Utility.similarityStanding(otherStandingInfo, standingInformation);
+				similarity += standingSimilarity;
 				
-				simHistory.addHistory(
-						new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageSimilarity));
+				//If getting patient database child id will be other than 0 and we can match operations
+				if(currentPatientHistory.getChild() != 0)
+				{
+					ResultSet treatments = this.fetchResult("SELECT birth_year, treatment.date, examination.id FROM examination, treatment, child "
+															+ "where child = " + childId + " and treatment.examination = examination.id and child.id = examination.child "
+															+ "order by treatment.date");
+					similarity += Utility.similarityOperations(currentPatientHistory, age, treatments);
+				}
+				
+				simHistory.addHistory(new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageSimilarity));
+				simHistory.addHistory(new SimilarityHistory("Help with standing", 0, 0, standingSimilarity, standingSimilarity));
+				
 				for (int i = 0; i < nrOfColumns; i++)
 				{
 					String valuePrep = result.getString(i + 1);
