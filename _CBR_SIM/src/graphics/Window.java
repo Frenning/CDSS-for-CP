@@ -35,9 +35,11 @@ public class Window extends JFrame
 	private JPanel standingBulletsFrame = new JPanel();
 	private JPanel standingHoursBulletsFrame = new JPanel();
 	private JPanel standingDaysBulletsFrame = new JPanel();
+	private JPanel pubertyBulletsFrame = new JPanel();
 	private ButtonGroup standingBulletGroup = new ButtonGroup();
 	private ButtonGroup standingHoursBulletGroup = new ButtonGroup();
 	private ButtonGroup standingDaysBulletGroup = new ButtonGroup();
+	private ButtonGroup pubertyBulletGroup = new ButtonGroup();
 	private JButton buttonFetch = new JButton("Hämta patient från databas");
 	private JButton button = new JButton("Visa liknande patienter");
 	private JMenuBar menuBar = new JMenuBar();
@@ -103,12 +105,24 @@ public class Window extends JFrame
 		standingDaysBulletsFrame.add(btn56);
 		standingDaysBulletsFrame.add(btn7);
 		
+		JLabel pubertyLabel = new JLabel("Har kommit in i puberteten: ");
+		JRadioButton pubertyBtnYes = new JRadioButton("Ja");
+		JRadioButton pubertyBtnNo = new JRadioButton("Nej");
+		JRadioButton pubertyBtnDN = new JRadioButton("Vet ej");
+		pubertyBulletGroup.add(pubertyBtnYes);
+		pubertyBulletGroup.add(pubertyBtnNo);
+		pubertyBulletGroup.add(pubertyBtnDN);
+		pubertyBulletsFrame.add(pubertyLabel);
+		pubertyBulletsFrame.add(pubertyBtnYes);
+		pubertyBulletsFrame.add(pubertyBtnNo);
+		pubertyBulletsFrame.add(pubertyBtnDN);
 		
 		add(agePanel);
 		add(gmfcsPanel);
 		add(standingBulletsFrame);
 		add(standingHoursBulletsFrame);
 		add(standingDaysBulletsFrame);
+		add(pubertyBulletsFrame);
 		PanelData[] data = MetaHandler.getPanelData();
 		for (int i = 0; i < data.length; i++)
 		{
@@ -140,6 +154,7 @@ public class Window extends JFrame
 			
 			
 			String [] standingInformation = new String [3];
+			String puberty = new String();
 			
 	        for (Enumeration<AbstractButton>buttons = standingBulletGroup.getElements(); buttons.hasMoreElements();) {
 	            AbstractButton button = buttons.nextElement();
@@ -164,8 +179,16 @@ public class Window extends JFrame
 	            	standingInformation[2] = button.getText();
 	            }
 	        }
+	        
+	        for (Enumeration<AbstractButton>buttons = pubertyBulletGroup.getElements(); buttons.hasMoreElements();) {
+	            AbstractButton button = buttons.nextElement();
+
+	            if (button.isSelected()) {
+	            	puberty = button.getText();
+	            }
+	        }
 			
-			program.fetchSimilar(values, age, gmfcsPanel.getSliderValue(), standingInformation);
+			program.fetchSimilar(values, age, gmfcsPanel.getSliderValue(), standingInformation, puberty);
 		}
 	}
 

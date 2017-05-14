@@ -112,18 +112,18 @@ public class Utility
 		
 	}
 	
-	public static double similarityOperations (ExaminationHistory currentPatientHistory, double currentAge, ResultSet treatmentsOther)
+	public static double similaritySurgery (ExaminationHistory currentPatientHistory, double currentAge, ResultSet treatmentsOther)
 	{
-		double recentTreatmentAge = getLatestOperationAge(currentPatientHistory.getExaminations());
+		double recentTreatmentAge = getLatestSurgeryAge(currentPatientHistory.getExaminations());
 		
-		// If no operations were done on current patient
+		// If no surgeries were done on current patient
 		if(recentTreatmentAge == 0)
 			return 0.0;
 		
-		// Calculates how relevant the latest operation is (age-wise) of the current patient
+		// Calculates how relevant the latest surgery is (age-wise) of the current patient
 		Age.similarityFallOff = 4;
 		Age.maxSimilarity = 1.0;
-		Age.addBreakPoints(currentAge);
+		Age.addBreakPoints(currentAge, "null");
 		double simLatestTreatment = Age.calculateAgeSim(recentTreatmentAge);
 		
 		
@@ -139,7 +139,7 @@ public class Utility
 					continue;
 				double ageAtTreatment = Age.getAgeAtExamination(birthyear, date);
 				double ageDiff = Math.abs(recentTreatmentAge - ageAtTreatment);
-				// The closest operation by age is found
+				// The closest surgery by age is found
 				if(ageDiff < ageClosestDiff)
 				{
 					ageClosestDiff = ageDiff;
@@ -157,16 +157,16 @@ public class Utility
 		if(ageClosest == 0)
 			return 0.0;
 		
-		//Define how much similarity-value the operations should have and how much of a difference is accepted (fall-off)
+		//Define how much similarity-value the surgeries should have and how much of a difference is accepted (fall-off)
 		Age.similarityFallOff = 4;
 		Age.maxSimilarity = 0.2;
-		// Compare most recent operation-age of current patient with closest operation found (by age) of other patient. 
-		// Multiply it by how relevant the latest operation of current patient is.
-		Age.addBreakPoints(recentTreatmentAge);
+		// Compare most recent surgery-age of current patient with closest surgery found (by age) of other patient. 
+		// Multiply it by how relevant the latest surgery of current patient is.
+		Age.addBreakPoints(recentTreatmentAge, "null");
 		return simLatestTreatment * Age.calculateAgeSim(ageClosest);
 	}
 	
-	public static double getLatestOperationAge(Vector <Examination> examinations)
+	public static double getLatestSurgeryAge(Vector <Examination> examinations)
 	{
 		Vector <Treatment> treatments = new Vector<Treatment>();
 		

@@ -28,6 +28,7 @@ public class Age
 	public static int MAX = 20;
 	private static int range = MAX - MIN;
 	
+	public static double pubertyWeight = 1.5;
 	public static int similarityFallOff = 2;
 	public static double maxSimilarity = 0.5;
 	
@@ -35,10 +36,15 @@ public class Age
 	public static SimCalculator simCalculator = new SimCalculator();
 	public static SimCalculator maxAgeDiffCalculator = new SimCalculator();
 	
-	public static void addBreakPoints(double age)
+	public static void addBreakPoints(double age, String puberty)
 	{
 		double maxAgeDiff = maxAgeDiffCalculator.getWeight(age);
+		
+		if((puberty == "Ja" || puberty == "Vet ej") && age <= 18)
+			maxAgeDiff *= pubertyWeight;
 		double lowestAge = maxAgeDiffCalculator.calculateLowestAgeDiff(age);
+		if(puberty == "Nej" && age >= 16)
+			lowestAge *= pubertyWeight;
 		
 		simCalculator = new SimCalculator();
 		simCalculator.addBreakpoint(new Breakpoint(lowestAge-similarityFallOff, 0));

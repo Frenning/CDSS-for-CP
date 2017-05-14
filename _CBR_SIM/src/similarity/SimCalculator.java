@@ -142,11 +142,11 @@ public class SimCalculator
 			double lowerX = this.breakpoints.get(indexOfHigher - 1).getX(); // 1
 			double higherX = this.breakpoints.get(indexOfHigher).getX(); // 1,5
 			double distanceX = higherX - lowerX;	// 0,5
-			double diffToLowerInPercent = actualAge - lowerX;	// 0,2
-			diffToLowerInPercent /= distanceX;	// 0,2 / 0,5 = 0,4
+			//double diffToLowerInPercent = actualAge - lowerX;	// 0,2
+			//diffToLowerInPercent /= distanceX;	// 0,2 / 0,5 = 0,4
 			double similarityLower = this.breakpoints.get(indexOfHigher - 1).getSimilarity();	// 1
 			double distanceSimilarity = this.breakpoints.get(indexOfHigher).getSimilarity() - similarityLower;	// 0 - 1 = -1
-			double similarity = similarityLower + (diffToLowerInPercent * distanceSimilarity); // 1 + (0,4 * -1) = 0,6
+			//double similarity = similarityLower + (diffToLowerInPercent * distanceSimilarity); // 1 + (0,4 * -1) = 0,6
 			
 			//Calculates lowest age difference for actualAge, for example if actualAge = 11.5, current will be = 9
 			double current = (distanceSimilarity * lowerX + actualAge * distanceX - similarityLower * distanceX) / (distanceSimilarity + distanceX);

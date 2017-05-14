@@ -47,22 +47,22 @@ public class Program
 		new Window(this);
 	}
 
-	public void fetchSimilar(int[] values, double age, int GMFCS, String [] standingInformation)
+	public void fetchSimilar(int[] values, double age, int GMFCS, String [] standingInformation, String puberty)
 	{
 		long start = System.nanoTime();
 		System.out.println(System.nanoTime());
 		ExaminationHistory currentPatientHistory = new ExaminationHistory(0, 2016 - (int)age, 0);
 		currentPatientHistory.addExamination(new Examination(values, age));
-		this.fetchSimilar(values, age, currentPatientHistory, GMFCS, standingInformation);
+		this.fetchSimilar(values, age, currentPatientHistory, GMFCS, standingInformation, puberty);
 		long timing = System.nanoTime() - start;
 		timing /= 1000;
 		System.out.println(timing + " millisekunder");
 	}
 
-	public void fetchSimilar(int[] values, double age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient, String [] standingInformation)
+	public void fetchSimilar(int[] values, double age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient, String [] standingInformation, String puberty)
 	{
 		String query = "select " + MetaHandler.getColumnNamesCommaSeparated();
-		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient, standingInformation, currentPatientHistory);
+		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient, standingInformation, currentPatientHistory, puberty);
 		Vector<ExaminationHistory> histories = this.getDetailedInfo(similar);
 		new ResultWindow(histories, currentPatientHistory, values, age, GMFCS_currentPatient, standingInformation);
 	}
@@ -261,7 +261,7 @@ public class Program
 	// values
 	// Returns a list with the examinations that are most similar
 
-	private Vector<Similarity> fetchMostSimilar(int[] values, double age, String query, int GMFCS_currentPatient, String [] standingInformation, ExaminationHistory currentPatientHistory)
+	private Vector<Similarity> fetchMostSimilar(int[] values, double age, String query, int GMFCS_currentPatient, String [] standingInformation, ExaminationHistory currentPatientHistory, String puberty)
 	{
 		// getNrOfCol är lines i meta.csv
 		Vector<Similarity> similarities = new Vector<Similarity>();
@@ -276,7 +276,7 @@ public class Program
 			int nrOfColumns = MetaHandler.getNrOfColumns();
 			
 			//Add breakpoints needed to calculate similarity for current age
-			Age.addBreakPoints(age);
+			Age.addBreakPoints(age, puberty);
 		
 			while(result.next())
 			{
@@ -290,7 +290,7 @@ public class Program
 				// Calculate age similarity
 				Age.similarityFallOff = 2;
 				Age.maxSimilarity = 0.5;
-				Age.addBreakPoints(age);
+				Age.addBreakPoints(age, puberty);
 				double similarity = Age.calculateAgeSim(ageAtExamination);
 				int childId = result.getInt(nrOfColumns + 1);
 				SimilarityHistoryComplete simHistory = new SimilarityHistoryComplete(childId);
@@ -311,7 +311,7 @@ public class Program
 					ResultSet treatments = this.fetchResult("SELECT birth_year, treatment.date, examination.id FROM examination, treatment, child "
 															+ "where child = " + childId + " and treatment.examination = examination.id and child.id = examination.child "
 															+ "order by treatment.date");
-					similarity += Utility.similarityOperations(currentPatientHistory, age, treatments);
+					similarity += Utility.similaritySurgery(currentPatientHistory, age, treatments);
 				}
 				
 				simHistory.addHistory(new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageSimilarity));
@@ -473,7 +473,7 @@ public class Program
 			Date birthDate = Examination.birthYearToDate(result.getInt(nrOfColumns + 2));
 			double ageAtExamination = Examination.ageDiffToDouble(examinationDate, birthDate);
 			this.fetchSimilar(values, ageAtExamination, this.getChildsExaminationsHistory(child.getId()),
-					result.getInt(nrOfColumns + 3), standingInformation);
+					result.getInt(nrOfColumns + 3), standingInformation, "null");
 		}
 		catch (Exception e)
 		{
