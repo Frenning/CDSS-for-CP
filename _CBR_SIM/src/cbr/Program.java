@@ -47,22 +47,22 @@ public class Program
 		new Window(this);
 	}
 
-	public void fetchSimilar(int[] values, double age, int GMFCS, String [] standingInformation, String puberty)
+	public void fetchSimilar(int[] values, double age, int GMFCS, String [] standingInformation, String puberty, Boolean usesAngles)
 	{
 		long start = System.nanoTime();
 		System.out.println(System.nanoTime());
 		ExaminationHistory currentPatientHistory = new ExaminationHistory(0, 2016 - (int)age, 0);
 		currentPatientHistory.addExamination(new Examination(values, age));
-		this.fetchSimilar(values, age, currentPatientHistory, GMFCS, standingInformation, puberty);
+		this.fetchSimilar(values, age, currentPatientHistory, GMFCS, standingInformation, puberty, usesAngles);
 		long timing = System.nanoTime() - start;
 		timing /= 1000;
 		System.out.println(timing + " millisekunder");
 	}
 
-	public void fetchSimilar(int[] values, double age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient, String [] standingInformation, String puberty)
+	public void fetchSimilar(int[] values, double age, ExaminationHistory currentPatientHistory, int GMFCS_currentPatient, String [] standingInformation, String puberty, Boolean usesAngles)
 	{
 		String query = "select " + MetaHandler.getColumnNamesCommaSeparated();
-		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient, standingInformation, currentPatientHistory, puberty);
+		Vector<Similarity> similar = this.fetchMostSimilar(values, age, query, GMFCS_currentPatient, standingInformation, currentPatientHistory, puberty, usesAngles);
 		Vector<ExaminationHistory> histories = this.getDetailedInfo(similar);
 		new ResultWindow(histories, currentPatientHistory, values, age, GMFCS_currentPatient, standingInformation);
 	}
@@ -261,7 +261,7 @@ public class Program
 	// values
 	// Returns a list with the examinations that are most similar
 
-	private Vector<Similarity> fetchMostSimilar(int[] values, double age, String query, int GMFCS_currentPatient, String [] standingInformation, ExaminationHistory currentPatientHistory, String puberty)
+	private Vector<Similarity> fetchMostSimilar(int[] values, double age, String query, int GMFCS_currentPatient, String [] standingInformation, ExaminationHistory currentPatientHistory, String puberty, Boolean usesAngles)
 	{
 		// getNrOfCol är lines i meta.csv
 		Vector<Similarity> similarities = new Vector<Similarity>();
@@ -333,7 +333,9 @@ public class Program
 					}
 					double columnSimilarity = MetaHandler.calculateSimilarity(i, values[i], value);
 					double weight = MetaHandler.getWeight(i);
-					double theSim = columnSimilarity * weight;
+					double theSim = 0;
+					if(usesAngles)
+						theSim = columnSimilarity * weight;
 					simHistory.addHistory(new SimilarityHistory(MetaHandler.getColumnsName(i), values[i], value,
 							columnSimilarity, theSim));
 					similarity += theSim;
@@ -389,7 +391,7 @@ public class Program
 		return null;
 	}
 
-	public void showSimilarWindow()
+	public void showSimilarWindow(Boolean usesAngles)
 	{
 		Vector<Child> children = new Vector<Child>();
 		ResultSet result = this.fetchResult(
@@ -434,12 +436,12 @@ public class Program
 		{
 			e.printStackTrace();
 		}
-		new ExistingPatientsWindow(this, children);
+		new ExistingPatientsWindow(this, children, usesAngles);
 	}
 
 	// Fetch the values from the latest examination of a certain child
 	// Then call this.fetchSimilar to show similar patients
-	public void fetchValuesFromDatabase(Child child)
+	public void fetchValuesFromDatabase(Child child, Boolean usesAngles)
 	{
 		try
 		{
@@ -473,7 +475,7 @@ public class Program
 			Date birthDate = Examination.birthYearToDate(result.getInt(nrOfColumns + 2));
 			double ageAtExamination = Examination.ageDiffToDouble(examinationDate, birthDate);
 			this.fetchSimilar(values, ageAtExamination, this.getChildsExaminationsHistory(child.getId()),
-					result.getInt(nrOfColumns + 3), standingInformation, "null");
+					result.getInt(nrOfColumns + 3), standingInformation, "null", usesAngles);
 		}
 		catch (Exception e)
 		{

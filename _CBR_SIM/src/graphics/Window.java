@@ -1,5 +1,7 @@
 package graphics;
 
+import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -8,9 +10,11 @@ import java.awt.event.KeyEvent;
 import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -20,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.LayoutFocusTraversalPolicy;
 
 import cbr.Age;
 import cbr.MetaHandler;
@@ -40,6 +45,8 @@ public class Window extends JFrame
 	private ButtonGroup standingHoursBulletGroup = new ButtonGroup();
 	private ButtonGroup standingDaysBulletGroup = new ButtonGroup();
 	private ButtonGroup pubertyBulletGroup = new ButtonGroup();
+	private JCheckBox anglesCheckboxBtn = new JCheckBox("Use ankle joint angles: ");
+	private JPanel anglesFrame = new JPanel();
 	private JButton buttonFetch = new JButton("Hämta patient från databas");
 	private JButton button = new JButton("Visa liknande patienter");
 	private JMenuBar menuBar = new JMenuBar();
@@ -61,8 +68,10 @@ public class Window extends JFrame
 		itemSim.setMnemonic(KeyEvent.VK_O);
 		itemSim.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		itemSim.addActionListener(new MenuListener());
-		setLayout(new FlowLayout(FlowLayout.LEFT));
-		add(buttonFetch);
+		setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
+		
+		add(buttonFetch, BorderLayout.CENTER);
+		
 		buttonFetch.addActionListener(new ButtonListenerFetch());
 		
 		JLabel standingLabel = new JLabel("Använder ståhjälpmedel: ");
@@ -117,27 +126,56 @@ public class Window extends JFrame
 		pubertyBulletsFrame.add(pubertyBtnNo);
 		pubertyBulletsFrame.add(pubertyBtnDN);
 		
-		add(agePanel);
+		add(agePanel, BorderLayout.LINE_END);
 		add(gmfcsPanel);
-		add(standingBulletsFrame);
-		add(standingHoursBulletsFrame);
-		add(standingDaysBulletsFrame);
+		add(standingBulletsFrame, BorderLayout.LINE_START);
+		add(standingHoursBulletsFrame, BorderLayout.LINE_START);
+		add(standingDaysBulletsFrame, BorderLayout.LINE_START);
 		//add(pubertyBulletsFrame);
+	
+		add(anglesCheckboxBtn);
+		// Vinklar
 		PanelData[] data = MetaHandler.getPanelData();
 		for (int i = 0; i < data.length; i++)
 		{
 			SliderPanel panel = new SliderPanel(data[i]);
 			panels[i] = panel;
-			add(panel);
+			anglesFrame.add(panel);
 		}
+		anglesFrame.setLayout(new BoxLayout(anglesFrame, BoxLayout.Y_AXIS));
+		add(anglesFrame);
+		
+		anglesFrame.setVisible(false);
+
+		
 		add(button);
+		anglesCheckboxBtn.addActionListener(new AnglesButtonListener());
 		button.addActionListener(new ButtonListenerShow());
-		setSize(new Dimension(800, 900));
+		setSize(new Dimension(800, 400));
 		setTitle("Decision support - Din patient");
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
+	class AnglesButtonListener implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if(anglesCheckboxBtn.isSelected())
+			{
+				setSize(new Dimension(800, 900));
+				anglesFrame.setVisible(true);
+			}
+				
+			else
+			{
+				setSize(new Dimension(800, 400));
+				anglesFrame.setVisible(false);
+			}
+				
+		}
+	}
 	class ButtonListenerShow implements ActionListener
 	{
 		@Override
@@ -188,7 +226,7 @@ public class Window extends JFrame
 	            }
 	        }
 			
-			program.fetchSimilar(values, age, gmfcsPanel.getSliderValue(), standingInformation, puberty);
+			program.fetchSimilar(values, age, gmfcsPanel.getSliderValue(), standingInformation, puberty, anglesCheckboxBtn.isSelected());
 		}
 	}
 
@@ -213,7 +251,7 @@ public class Window extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			program.showSimilarWindow();
+			program.showSimilarWindow(anglesCheckboxBtn.isSelected());
 		}
 	}
 

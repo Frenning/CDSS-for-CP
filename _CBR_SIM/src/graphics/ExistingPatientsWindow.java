@@ -33,11 +33,13 @@ public class ExistingPatientsWindow extends JFrame
 	private JPanel descriptionPanel = new JPanel();
 	private JScrollPane topScroll = new JScrollPane(descriptionPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	private Boolean usesAngles;
 
-	public ExistingPatientsWindow(Program program, Vector<Child> children)
+	public ExistingPatientsWindow(Program program, Vector<Child> children, Boolean usesAngles)
 	{
 		this.program = program;
 		this.children = children;
+		this.usesAngles = usesAngles;
 		// setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS) );
 		setLayout(null);
 		// descriptionPanel.setBackground(Color.white);
@@ -91,7 +93,7 @@ public class ExistingPatientsWindow extends JFrame
 				if (event.getSource() == clickables.get(i))
 				{
 					clickables.get(i).setBackground(Color.cyan);
-					program.fetchValuesFromDatabase(children.get(i));
+					program.fetchValuesFromDatabase(children.get(i), usesAngles);
 					break;
 				}
 			}
