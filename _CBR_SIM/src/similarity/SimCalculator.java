@@ -19,7 +19,7 @@ public class SimCalculator
 
 	// Todo this should only be in a subclass of SimCalculator
 	private int width = 1000;
-	private int paddingX = 50;
+	private int paddingX = 80;
 	private int height = 500;
 	private int paddingY = 50;
 
@@ -130,14 +130,14 @@ public class SimCalculator
 		}
 		if (indexOfHigher == 0)
 		{
-			return actualAge-1;
+			return actualAge-0.5;
 		}
 		else
 		{
 			indexOfHigher--;
 			if(indexOfHigher == 0)
 			{
-				return actualAge-1;
+				return actualAge-0.5;
 			}
 			double lowerX = this.breakpoints.get(indexOfHigher - 1).getX(); // 1
 			double higherX = this.breakpoints.get(indexOfHigher).getX(); // 1,5
@@ -174,7 +174,7 @@ public class SimCalculator
 		public SimilarityGraphWindow(SimilarityHistory history, String patientName)
 		{
 			add(new SimilarityGraphPanel(history));
-			setSize(new Dimension(width + (2 * paddingX), height + (2 * paddingY)));
+			setSize(new Dimension(width + (4 * paddingX), height + (2 * paddingY)));
 			setTitle(description + " " + patientName);
 			setVisible(true);
 			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -211,15 +211,41 @@ public class SimCalculator
 				g.setColor(Color.white);
 				g.fillRect(paddingX, paddingY, width, height - paddingY);
 				g.setColor(Color.gray);
-				for (int i = 0; i <= nrOfLines; i++)
+				
+				double convertX = width / span;
+				// Year, month
+				if(history.getDescription() == "ålder")
 				{
-					double value = start + (i * step);
-					int x = (int) ((i * spaceX) + paddingX);
-					g.setColor(Color.LIGHT_GRAY);
-					g.drawLine(x, paddingY, x, height);
-					g.setColor(Color.black);
-					g.drawString(String.format("%.2f", value), x, height + paddingY - (paddingY / 3));
+					for (int i = 0; i < breakpoints.size(); i++)
+					{
+						double value = start + (i * step);
+						int x = (int) ((breakpoints.get(i).getX() - start) * convertX) + paddingX;
+						g.setColor(Color.LIGHT_GRAY);
+						g.drawLine(x, paddingY, x, height);
+						g.setColor(Color.black);
+						double fracPart = breakpoints.get(i).getX() % 1;
+						double integralPart = breakpoints.get(i).getX() - fracPart;
+						g.drawString(String.format("%.0f y, %d m", integralPart, (int)(fracPart * 12)), x - 20, height + 25);
+					}
+					g.drawString(String.format("Age in years, months (y, m)"), width + 130, height + 25);
+					g.drawString(String.format("Similarity"), paddingX / 6, paddingY - 25);
 				}
+				else
+				{
+				// Writing out in decimal form
+					for (int i = 0; i <= nrOfLines; i++)
+					{
+						double value = start + (i * step);
+						int x = (int) ((i * spaceX) + paddingX);
+						g.setColor(Color.LIGHT_GRAY);
+						g.drawLine(x, paddingY, x, height);
+						g.setColor(Color.black);
+						g.drawString(String.format("%.1f", value), x, height + 25);
+					}
+				}
+				
+				
+				
 				for (double i = 0; i <= 1; i += 0.1)
 				{
 					int x = (int) (paddingX / 3);
@@ -229,7 +255,7 @@ public class SimCalculator
 					g.setColor(Color.LIGHT_GRAY);
 					g.drawLine(paddingX, y, width + paddingX, y);
 				}
-				double convertX = width / span;
+				
 				double lastX = paddingX;
 				double lastY = (height) - (breakpoints.get(0).getSimilarity() * (height - paddingY));
 				g.setColor(Color.black);

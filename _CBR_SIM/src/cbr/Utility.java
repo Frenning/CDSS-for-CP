@@ -122,7 +122,7 @@ public class Utility
 		
 		// Calculates how relevant the latest surgery is (age-wise) of the current patient
 		Age.similarityFallOff = 4;
-		Age.maxSimilarity = 1.0;
+		Age.ageWeight = 1.0;
 		Age.addBreakPoints(currentAge, "null");
 		double simLatestTreatment = Age.calculateAgeSim(recentTreatmentAge);
 		
@@ -159,7 +159,7 @@ public class Utility
 		
 		//Define how much similarity-value the surgeries should have and how much of a difference is accepted (fall-off)
 		Age.similarityFallOff = 4;
-		Age.maxSimilarity = 0.2;
+		Age.ageWeight = 0.2;
 		// Compare most recent surgery-age of current patient with closest surgery found (by age) of other patient. 
 		// Multiply it by how relevant the latest surgery of current patient is.
 		Age.addBreakPoints(recentTreatmentAge, "null");

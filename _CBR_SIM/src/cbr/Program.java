@@ -35,13 +35,13 @@ public class Program
 	{
 		MetaHandler.init();
 		
-		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(7, 1));
-		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(8, 2));
-		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(10, 3));
-		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(13, 3));
-		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(16, 4));
-		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(20, 5));
-		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(25, 5));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(4, 0.5));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(5, 1));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(10, 1));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(12, 1.5));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(16, 1.5));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(20, 2));
+		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(25, 3));
 		
 		this.connect();
 		new Window(this);
@@ -276,7 +276,7 @@ public class Program
 			int nrOfColumns = MetaHandler.getNrOfColumns();
 			
 			//Add breakpoints needed to calculate similarity for current age
-			Age.addBreakPoints(age, puberty);
+			Age.addBreakPoints(age, "null");
 		
 			while(result.next())
 			{
@@ -289,8 +289,8 @@ public class Program
 				
 				// Calculate age similarity
 				Age.similarityFallOff = 2;
-				Age.maxSimilarity = 0.5;
-				Age.addBreakPoints(age, puberty);
+				Age.ageWeight = 1;
+				Age.addBreakPoints(age, "null");
 				double similarity = Age.calculateAgeSim(ageAtExamination);
 				int childId = result.getInt(nrOfColumns + 1);
 				SimilarityHistoryComplete simHistory = new SimilarityHistoryComplete(childId);

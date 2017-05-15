@@ -30,7 +30,7 @@ public class Age
 	
 	public static double pubertyWeight = 1.5;
 	public static int similarityFallOff = 2;
-	public static double maxSimilarity = 0.5;
+	public static double ageWeight = 0.5;
 	
 	private static AgeSimTableModel ageSimTableModel = new AgeSimTableModel();
 	public static SimCalculator simCalculator = new SimCalculator();
@@ -48,9 +48,9 @@ public class Age
 		
 		simCalculator = new SimCalculator();
 		simCalculator.addBreakpoint(new Breakpoint(lowestAge-similarityFallOff, 0));
-		simCalculator.addBreakpoint(new Breakpoint(lowestAge, maxSimilarity));
-		simCalculator.addBreakpoint(new Breakpoint(age, maxSimilarity));
-		simCalculator.addBreakpoint(new Breakpoint(age+maxAgeDiff, maxSimilarity));
+		simCalculator.addBreakpoint(new Breakpoint(lowestAge, 1));
+		simCalculator.addBreakpoint(new Breakpoint(age, 1));
+		simCalculator.addBreakpoint(new Breakpoint(age+maxAgeDiff, 1));
 		simCalculator.addBreakpoint(new Breakpoint(age+maxAgeDiff+similarityFallOff, 0));
 		
 		MetaHandler.ageCalculator = simCalculator;
@@ -86,7 +86,7 @@ public class Age
 		// Exempel: currentAge = 9. maxAgeDiff är då = 2.5. ->
 		// -> breakPoint nr 1 = 5.5, breakpoint nr 2 = 6.5, breakpoint nr 3 = 11.5 och breakpoint nr 4 = 12.5
 
-		return simCalculator.getWeight(otherAge);
+		return simCalculator.getWeight(otherAge) * ageWeight;
 	}
 
 	public static void showAgeSimWindow()
