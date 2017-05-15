@@ -112,7 +112,7 @@ public class Utility
 		
 	}
 	
-	public static double similaritySurgery (ExaminationHistory currentPatientHistory, double currentAge, ResultSet treatmentsOther)
+	public static double similaritySurgery (ExaminationHistory currentPatientHistory, ResultSet otherPatientDate, double currentAge, ResultSet treatmentsOther)
 	{
 		double recentTreatmentAge = getLatestSurgeryAge(currentPatientHistory.getExaminations());
 		
@@ -124,20 +124,23 @@ public class Utility
 		Age.similarityFallOff = 4;
 		Age.ageWeight = 1.0;
 		Age.addBreakPoints(currentAge, "null");
-		double simLatestTreatment = Age.calculateAgeSim(recentTreatmentAge);
-		
+		double simLatestTreatment = Age.calculateAgeSim(recentTreatmentAge);		
 		
 		double ageClosestDiff = 100;
 		double ageClosest = 0;
+		double ageOther = 0;
 		try
-		{
+		{		
+			otherPatientDate.next();//get date
 			while (treatmentsOther.next())
-			{
+			{				
 				int birthyear = treatmentsOther.getInt("birth_year");
 				String date = treatmentsOther.getString("date");
+				ageOther = Age.getAgeAtExamination(birthyear, otherPatientDate.getString("date"));
 				if(birthyear == 0 || date == null)
 					continue;
-				double ageAtTreatment = Age.getAgeAtExamination(birthyear, date);
+				double ageAtTreatment = Age.getAgeAtExamination(birthyear, date);			
+				
 				double ageDiff = Math.abs(recentTreatmentAge - ageAtTreatment);
 				// The closest surgery by age is found
 				if(ageDiff < ageClosestDiff)
@@ -154,7 +157,7 @@ public class Utility
 			e.printStackTrace();
 		}
 		
-		if(ageClosest == 0)
+		if(ageClosest == 0 || ageOther <= recentTreatmentAge)
 			return 0.0;
 		
 		//Define how much similarity-value the surgeries should have and how much of a difference is accepted (fall-off)

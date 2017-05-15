@@ -55,7 +55,7 @@ public class Program
 		currentPatientHistory.addExamination(new Examination(values, age));
 		this.fetchSimilar(values, age, currentPatientHistory, GMFCS, standingInformation, puberty, usesAngles);
 		long timing = System.nanoTime() - start;
-		timing /= 1000;
+		timing /= 1000000;
 		System.out.println(timing + " millisekunder");
 	}
 
@@ -311,7 +311,9 @@ public class Program
 					ResultSet treatments = this.fetchResult("SELECT birth_year, treatment.date, examination.id FROM examination, treatment, child "
 															+ "where child = " + childId + " and treatment.examination = examination.id and child.id = examination.child "
 															+ "order by treatment.date");
-					similarity += Utility.similaritySurgery(currentPatientHistory, age, treatments);
+					ResultSet otherPatientDate = this.fetchResult( "select " + " max(examination.date) from child, examination where examination.child = child.id and child.id = "
+																	+ childId + " order by examination.date");
+					similarity += Utility.similaritySurgery(currentPatientHistory, otherPatientDate, age, treatments);
 				}
 				
 				simHistory.addHistory(new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageSimilarity));
