@@ -122,7 +122,7 @@ public class Window extends JFrame
 		add(standingBulletsFrame);
 		add(standingHoursBulletsFrame);
 		add(standingDaysBulletsFrame);
-		add(pubertyBulletsFrame);
+		//add(pubertyBulletsFrame);
 		PanelData[] data = MetaHandler.getPanelData();
 		for (int i = 0; i < data.length; i++)
 		{
