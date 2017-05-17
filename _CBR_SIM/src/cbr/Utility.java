@@ -47,9 +47,9 @@ public class Utility
 					
 					// Add to the similarity value a number depending on the hours per week difference between the patients
 					if(hoursDifference <= 1.0)
-						similarity += 0.15;
-					else if(hoursDifference > 1.0 && hoursDifference <= 3.0)
 						similarity += 0.1;
+					else if(hoursDifference > 1.0 && hoursDifference <= 3.0)
+						similarity += 0.075;
 					else if(hoursDifference > 3.0 && hoursDifference <= 5.0)
 						similarity += 0.05;
 					else if(hoursDifference > 5.0 && hoursDifference <= 10.0)
@@ -157,7 +157,7 @@ public class Utility
 			e.printStackTrace();
 		}
 		
-		if(ageClosest == 0 || ageOther <= recentTreatmentAge)
+		if(ageClosest == 0 || ageOther <= currentAge)
 			return 0.0;
 		
 		//Define how much similarity-value the surgeries should have and how much of a difference is accepted (fall-off)
@@ -166,7 +166,8 @@ public class Utility
 		// Compare most recent surgery-age of current patient with closest surgery found (by age) of other patient. 
 		// Multiply it by how relevant the latest surgery of current patient is.
 		Age.addBreakPoints(recentTreatmentAge, "null");
-		return simLatestTreatment * Age.calculateAgeSim(ageClosest);
+		double totalSim = simLatestTreatment * Age.calculateAgeSim(ageClosest);
+		return totalSim;
 	}
 	
 	public static double getLatestSurgeryAge(Vector <Examination> examinations)

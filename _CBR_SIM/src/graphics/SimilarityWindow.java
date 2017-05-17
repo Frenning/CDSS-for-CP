@@ -101,11 +101,11 @@ public class SimilarityWindow extends JFrame
 		weightPanel.add(label);
 		
 		//Add empty label for age and standing parameters
-		label = new JLabel("-");
+		label = new JLabel("0,5");
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);
-		label = new JLabel("-");
+		label = new JLabel("0,3");
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);

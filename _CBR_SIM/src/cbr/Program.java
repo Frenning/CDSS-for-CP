@@ -289,7 +289,7 @@ public class Program
 				
 				// Calculate age similarity
 				Age.similarityFallOff = 2;
-				Age.ageWeight = 1;
+				Age.ageWeight = 0.5;
 				Age.addBreakPoints(age, "null");
 				double similarity = Age.calculateAgeSim(ageAtExamination);
 				int childId = result.getInt(nrOfColumns + 1);
@@ -305,24 +305,26 @@ public class Program
 				double standingSimilarity = Utility.similarityStanding(otherStandingInfo, standingInformation);
 				similarity += standingSimilarity;
 				
-				//If getting patient database child id will be other than 0 and we can match operations
+				//If getting patient database child id will be other than 0 and we can match surgeries
 				if(currentPatientHistory.getChild() != 0)
 				{
 					ResultSet treatments = this.fetchResult("SELECT birth_year, treatment.date, examination.id FROM examination, treatment, child "
 															+ "where child = " + childId + " and treatment.examination = examination.id and child.id = examination.child "
 															+ "order by treatment.date");
-					ResultSet otherPatientDate = this.fetchResult( "select " + " max(examination.date) from child, examination where examination.child = child.id and child.id = "
+					ResultSet otherPatientDate = this.fetchResult( "select max(examination.date) as date from child, examination where examination.child = child.id and child.id = "
 																	+ childId + " order by examination.date");
 					similarity += Utility.similaritySurgery(currentPatientHistory, otherPatientDate, age, treatments);
 				}
 				
-				simHistory.addHistory(new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity, ageSimilarity));
+				simHistory.addHistory(new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity * 2, ageSimilarity));
 				simHistory.addHistory(new SimilarityHistory("Help with standing", 0, 0, standingSimilarity, standingSimilarity));
 				
 				for (int i = 0; i < nrOfColumns; i++)
 				{
+					double theSim = 0;
+					double columnSimilarity = 0;
+					int value = 0;
 					String valuePrep = result.getString(i + 1);
-					int value;
 					if (valuePrep == null)
 					{ // Data is missing. Use rounded average. Todo:
 						// Inform
@@ -333,11 +335,29 @@ public class Program
 					{
 						value = result.getInt(i + 1);
 					}
-					double columnSimilarity = MetaHandler.calculateSimilarity(i, values[i], value);
-					double weight = MetaHandler.getWeight(i);
-					double theSim = 0;
-					if(usesAngles)
-						theSim = columnSimilarity * weight;
+					
+					// If calculating plantarflexion (index 0, 1)
+					if(i <= 1)
+					{
+						columnSimilarity = MetaHandler.calculateSimilarity(i, values[i], value);
+						double weight = MetaHandler.getWeight(i);
+						
+						if(usesAngles)
+							theSim = columnSimilarity * weight;
+
+					}
+					// If calculating dorsal flexion (index 2, 3, 4, 5)
+					else
+					{
+						if(usesAngles)
+						{
+							if((values[i] < 0 && value < 0) || (values[i] >= 0 && value >= 0))
+							{
+								theSim = 0.025;
+								columnSimilarity = 1.0;
+							}
+						}
+					}
 					simHistory.addHistory(new SimilarityHistory(MetaHandler.getColumnsName(i), values[i], value,
 							columnSimilarity, theSim));
 					similarity += theSim;
