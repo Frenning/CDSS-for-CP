@@ -30,6 +30,9 @@ public class Program
 	private static int MIN_NR_OF_EXAMINATIONS_AFTER = 2;
 	private Connection connection = null;
 	
+	// [0] = Age, [1] = Uses standing aid, [2] = Hours per week, [3] = Plantar flexion, [4] = Dorsalflexion flek, [5] =  Dorsalflexion ext, [6] = Surgery
+	public static double weights [] = new double [7];
+	
 
 	public Program()
 	{
@@ -42,6 +45,14 @@ public class Program
 		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(16, 1.5));
 		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(20, 2));
 		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(25, 3));
+		
+		weights[0] = 0.4;
+		weights[1] = 0.2;
+		weights[2] = 0.1;
+		weights[3] = 0.025;
+		weights[4] = 0.025;
+		weights[5] = 0.025;
+		weights[6] = 0.15;
 		
 		this.connect();
 		new Window(this);
@@ -289,7 +300,7 @@ public class Program
 				
 				// Calculate age similarity
 				Age.similarityFallOff = 2;
-				Age.ageWeight = 0.5;
+				Age.ageWeight = weights[0];
 				Age.addBreakPoints(age, "null");
 				double similarity = Age.calculateAgeSim(ageAtExamination);
 				int childId = result.getInt(nrOfColumns + 1);
@@ -343,17 +354,29 @@ public class Program
 						double weight = MetaHandler.getWeight(i);
 						
 						if(usesAngles)
-							theSim = columnSimilarity * weight;
+							theSim = columnSimilarity * weights[3];
 
 					}
-					// If calculating dorsal flexion (index 2, 3, 4, 5)
-					else
+					// If calculating dorsal flexion flek (index 2, 3)
+					else if(i == 3 || i == 2)
 					{
 						if(usesAngles)
 						{
 							if((values[i] < 0 && value < 0) || (values[i] >= 0 && value >= 0))
 							{
-								theSim = 0.025;
+								theSim = Program.weights[4];
+								columnSimilarity = 1.0;
+							}
+						}
+					}
+					// If calculating dorsal flexion ext (index 4, 5)
+					else 
+					{
+						if(usesAngles)
+						{
+							if((values[i] < 0 && value < 0) || (values[i] >= 0 && value >= 0))
+							{
+								theSim = Program.weights[5];
 								columnSimilarity = 1.0;
 							}
 						}

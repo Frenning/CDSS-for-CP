@@ -17,6 +17,7 @@ import javax.swing.border.EtchedBorder;
 import cbr.Age;
 import cbr.ExaminationHistory;
 import cbr.MetaHandler;
+import cbr.Program;
 
 public class SimilarityWindow extends JFrame
 {
@@ -54,7 +55,7 @@ public class SimilarityWindow extends JFrame
 			label.setBorder(new EtchedBorder());
 			panel.add(label);
 		}
-		label = new JLabel();
+		label = new JLabel("Total similarity");
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		panel.add(label);
@@ -71,6 +72,8 @@ public class SimilarityWindow extends JFrame
 	    while (i < values.length) {
 	    	svalues[i] = String.valueOf(values[i++]);
 	    }
+	    
+	    //Age
 	    label = new JLabel(Integer.toString(age));
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
@@ -101,22 +104,49 @@ public class SimilarityWindow extends JFrame
 		weightPanel.add(label);
 		
 		//Add empty label for age and standing parameters
-		label = new JLabel("0,5");
+		label = new JLabel(String.format("%.3f", Program.weights[0]));
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);
-		label = new JLabel("0,3");
+		label = new JLabel(String.format("%.3f", Program.weights[1]+Program.weights[2]));
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);
 		
-		for (double weight : MetaHandler.getWeighs())
-		{
-			label = new JLabel(String.format("%.3f", weight));
-			label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-			label.setBorder(new EtchedBorder());
-			weightPanel.add(label);
-		}
+		//Angles of dorsiflexion and plantar flexion
+		label = new JLabel(String.format("%.3f", Program.weights[3]));
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		weightPanel.add(label);
+		
+		label = new JLabel(String.format("%.3f", Program.weights[3]));
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		weightPanel.add(label);
+		
+		label = new JLabel(String.format("%.3f", Program.weights[3]));
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		weightPanel.add(label);
+		
+		label = new JLabel(String.format("%.3f", Program.weights[3]));
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		weightPanel.add(label);
+		
+		label = new JLabel(String.format("%.3f", Program.weights[4]));
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		weightPanel.add(label);
+		
+		label = new JLabel(String.format("%.3f", Program.weights[4]));
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		weightPanel.add(label);
+		
+		
+	
+		//Empty
 		label = new JLabel();
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());

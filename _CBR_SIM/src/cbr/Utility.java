@@ -31,13 +31,14 @@ public class Utility
 				else
 				{
 					// Vikten för hur mkt det spelar roll om båda patienterna använder ståhjälpmedel
-					double similarity = 0.2;
+					double usesStandingSimilarity = 1.0;
+					double hoursSimilarity = 0;
 					// Kolla skillnaden i hur länge de använd ståhjälp och addera på similarityn beroende på hur lika de är.
 					
 					//Check so that no values are null, and if they are then don't add any more similarity.
 					if(otherPatient[1] == null || otherPatient[2] == null || 
 							curPatient[1] == null || curPatient[2] == null)
-						return similarity;
+						return usesStandingSimilarity;
 					
 					// Get the hours per week for each patient
 					double currentHrsPerWeek = calculateHoursPerWeek(curPatient[1], curPatient[2]);
@@ -47,15 +48,15 @@ public class Utility
 					
 					// Add to the similarity value a number depending on the hours per week difference between the patients
 					if(hoursDifference <= 1.0)
-						similarity += 0.1;
+						hoursSimilarity = 1;
 					else if(hoursDifference > 1.0 && hoursDifference <= 3.0)
-						similarity += 0.075;
+						hoursSimilarity = 0.75;
 					else if(hoursDifference > 3.0 && hoursDifference <= 5.0)
-						similarity += 0.05;
+						hoursSimilarity = 0.5;
 					else if(hoursDifference > 5.0 && hoursDifference <= 10.0)
-						similarity += 0.02;
+						hoursSimilarity = 0.2;
 						
-					return similarity;
+					return (usesStandingSimilarity * Program.weights[1]) + (hoursSimilarity * Program.weights[2]);
                 }
 			}
 		}
@@ -162,7 +163,7 @@ public class Utility
 		
 		//Define how much similarity-value the surgeries should have and how much of a difference is accepted (fall-off)
 		Age.similarityFallOff = 4;
-		Age.ageWeight = 0.2;
+		Age.ageWeight = Program.weights[5];
 		// Compare most recent surgery-age of current patient with closest surgery found (by age) of other patient. 
 		// Multiply it by how relevant the latest surgery of current patient is.
 		Age.addBreakPoints(recentTreatmentAge, "null");

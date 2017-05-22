@@ -8,7 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Enumeration;
+import java.util.Vector;
 
+import javax.swing.JTextField;
 import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -27,6 +29,7 @@ import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
 
 import cbr.Age;
+import cbr.ExaminationHistory;
 import cbr.MetaHandler;
 import cbr.PanelData;
 import cbr.Program;
@@ -52,12 +55,14 @@ public class Window extends JFrame
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu menu = new JMenu("Arkiv");
 	private JMenuItem item = new JMenuItem("Visa/ändra similarity ålder");
+	private JMenuItem weightsItem = new JMenuItem("Ändra vikter");
 	private JMenuItem itemSim = new JMenuItem("Visa similarity övriga");
 
 	public Window(Program program)
 	{
 		this.program = program;
 		menu.add(item);
+		menu.add(weightsItem);
 		menu.add(itemSim);
 		menuBar.add(menu);
 		setJMenuBar(menuBar);
@@ -68,6 +73,7 @@ public class Window extends JFrame
 		itemSim.setMnemonic(KeyEvent.VK_O);
 		itemSim.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		itemSim.addActionListener(new MenuListener());
+		weightsItem.addActionListener(new MenuListener());
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
 		
 		add(buttonFetch, BorderLayout.CENTER);
@@ -176,6 +182,8 @@ public class Window extends JFrame
 				
 		}
 	}
+	
+		
 	class ButtonListenerShow implements ActionListener
 	{
 		@Override
@@ -243,6 +251,10 @@ public class Window extends JFrame
 			{
 				new SimGraphWindow(MetaHandler.getSimCalculatorGraphs());
 			}
+			else if (e.getSource() == weightsItem)
+			{
+				WeightAdjustWindow();
+			}
 		}
 	}
 
@@ -253,6 +265,12 @@ public class Window extends JFrame
 		{
 			program.showSimilarWindow(anglesCheckboxBtn.isSelected());
 		}
+	}
+	
+	public void WeightAdjustWindow()
+	{
+		new AdjustWeightsWindow();
+	
 	}
 
 	class SimGraphWindow extends JFrame
