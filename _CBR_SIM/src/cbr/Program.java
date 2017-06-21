@@ -47,11 +47,11 @@ public class Program
 		Age.maxAgeDiffCalculator.addBreakpoint(new Breakpoint(25, 3));
 		
 		weights[0] = 0.4;
-		weights[1] = 0.2;
-		weights[2] = 0.1;
+		weights[1] = 0.15;
+		weights[2] = 0.05;
 		weights[3] = 0.025;
-		weights[4] = 0.025;
-		weights[5] = 0.025;
+		weights[4] = 0.05;
+		weights[5] = 0.05;
 		weights[6] = 0.15;
 		
 		this.connect();
@@ -327,7 +327,7 @@ public class Program
 					similarity += Utility.similaritySurgery(currentPatientHistory, otherPatientDate, age, treatments);
 				}
 				
-				simHistory.addHistory(new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity * 2, ageSimilarity));
+				simHistory.addHistory(new SimilarityHistory("ålder", age, ageAtExamination, ageSimilarity / weights[0], ageSimilarity));
 				simHistory.addHistory(new SimilarityHistory("Help with standing", 0, 0, standingSimilarity, standingSimilarity));
 				
 				for (int i = 0; i < nrOfColumns; i++)
@@ -350,11 +350,27 @@ public class Program
 					// If calculating plantarflexion (index 0, 1)
 					if(i <= 1)
 					{
-						columnSimilarity = MetaHandler.calculateSimilarity(i, values[i], value);
-						double weight = MetaHandler.getWeight(i);
-						
 						if(usesAngles)
-							theSim = columnSimilarity * weights[3];
+						{
+							double difference =  Math.abs(values[i] - value);
+							
+							if(difference <= 0)
+								columnSimilarity = 1.0;
+							
+							else if(difference == 1)
+								columnSimilarity = 0.75;
+							
+							else if(difference == 2)
+								columnSimilarity = 0.5;
+							
+							else if(difference == 3)
+								columnSimilarity = 0.25;
+							
+							else 
+								columnSimilarity = 0;
+							
+							theSim = columnSimilarity * Program.weights[3];
+						}
 
 					}
 					// If calculating dorsal flexion flek (index 2, 3)
@@ -362,10 +378,28 @@ public class Program
 					{
 						if(usesAngles)
 						{
-							if((values[i] < 0 && value < 0) || (values[i] >= 0 && value >= 0))
-							{
-								theSim = Program.weights[4];
+							double difference =  Math.abs(values[i] - value);
+							
+							if(difference <= 10)
 								columnSimilarity = 1.0;
+							
+							else if(difference > 10 && difference <= 15)
+								columnSimilarity = 0.75;
+							
+							else if(difference > 15 && difference <= 20)
+								columnSimilarity = 0.5;
+							
+							else if(difference > 20 && difference <= 30)
+								columnSimilarity = 0.25;
+							
+							else 
+								columnSimilarity = 0;
+							
+							theSim = columnSimilarity * Program.weights[4];
+							
+							if((values[i] < 0 && value >= 0) || (values[i] >= 0 && value < 0))
+							{
+								theSim *= 0.8;
 							}
 						}
 					}
@@ -374,10 +408,28 @@ public class Program
 					{
 						if(usesAngles)
 						{
-							if((values[i] < 0 && value < 0) || (values[i] >= 0 && value >= 0))
-							{
-								theSim = Program.weights[5];
+							double difference =  Math.abs(values[i] - value);
+							
+							if(difference <= 10)
 								columnSimilarity = 1.0;
+							
+							else if(difference > 10 && difference <= 15)
+								columnSimilarity = 0.75;
+							
+							else if(difference > 15 && difference <= 20)
+								columnSimilarity = 0.5;
+							
+							else if(difference > 20 && difference <= 30)
+								columnSimilarity = 0.25;
+							
+							else 
+								columnSimilarity = 0;
+							
+							theSim = columnSimilarity * Program.weights[5];
+							
+							if((values[i] < 0 && value >= 0) || (values[i] >= 0 && value < 0))
+							{
+								theSim *= 0.8;
 							}
 						}
 					}

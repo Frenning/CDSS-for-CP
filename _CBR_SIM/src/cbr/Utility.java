@@ -158,7 +158,7 @@ public class Utility
 			e.printStackTrace();
 		}
 		
-		if(ageClosest == 0 || ageOther <= currentAge)
+		if(ageClosest == 0)
 			return 0.0;
 		
 		//Define how much similarity-value the surgeries should have and how much of a difference is accepted (fall-off)

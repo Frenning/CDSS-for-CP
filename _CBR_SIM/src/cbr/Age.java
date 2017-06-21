@@ -40,15 +40,24 @@ public class Age
 	{
 		double maxAgeDiff = maxAgeDiffCalculator.getWeight(age);
 		
-		if((puberty == "Ja" || puberty == "Vet ej") && age <= 18)
-			maxAgeDiff *= pubertyWeight;
-		double lowestAge = maxAgeDiffCalculator.calculateLowestAgeDiff(age);
-		if(puberty == "Nej" && age >= 16)
-			lowestAge *= pubertyWeight;
+//		if((puberty == "Ja" || puberty == "Vet ej") && age <= 18)
+//			maxAgeDiff *= pubertyWeight;
 		
+//		if(puberty == "Nej" && age >= 16)
+//			lowestAge *= pubertyWeight;
+		double lowestAge;
 		simCalculator = new SimCalculator();
-		simCalculator.addBreakpoint(new Breakpoint(lowestAge-similarityFallOff, 0));
-		simCalculator.addBreakpoint(new Breakpoint(lowestAge, 1));
+		if((age > 4 && age < 6) || (age > 10 && age < 13.5))
+		{
+			lowestAge = maxAgeDiffCalculator.calculateLowestAgeDiff(age);
+			simCalculator.addBreakpoint(new Breakpoint(lowestAge-similarityFallOff, 0));
+			simCalculator.addBreakpoint(new Breakpoint(lowestAge, 1));
+		}
+		else 
+		{
+			simCalculator.addBreakpoint(new Breakpoint(age-maxAgeDiff-similarityFallOff, 0));
+			simCalculator.addBreakpoint(new Breakpoint(age-maxAgeDiff, 1));
+		}
 		simCalculator.addBreakpoint(new Breakpoint(age, 1));
 		simCalculator.addBreakpoint(new Breakpoint(age+maxAgeDiff, 1));
 		simCalculator.addBreakpoint(new Breakpoint(age+maxAgeDiff+similarityFallOff, 0));

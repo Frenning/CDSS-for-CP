@@ -167,7 +167,7 @@ public class MetaHandler
 
 	public static void showSimCalculatorGraph(int index, SimilarityHistory history, String patientName)
 	{
-		calculators[index].showWindow(history, patientName);
+		ageCalculator.showWindow(history, patientName);
 	}
 
 	public static JPanel[] getSimCalculatorGraphs()

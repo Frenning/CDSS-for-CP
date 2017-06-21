@@ -56,7 +56,7 @@ public class SimCalculator
 		int indexOfHigher = -1;
 		for (int i = 0; i < this.breakpoints.size(); i++)
 		{
-			if (this.breakpoints.get(i).getX() >= current)
+			if (this.breakpoints.get(i).getX() > current)
 			{
 				indexOfHigher = i;
 				break;
@@ -122,7 +122,7 @@ public class SimCalculator
 		int indexOfHigher = -1;
 		for (int i = 0; i < this.breakpoints.size(); i++)
 		{
-			if (this.breakpoints.get(i).getX() >= actualAge)
+			if (this.breakpoints.get(i).getX() > actualAge)
 			{
 				indexOfHigher = i;
 				break;

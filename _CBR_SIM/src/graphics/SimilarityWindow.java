@@ -124,22 +124,22 @@ public class SimilarityWindow extends JFrame
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);
 		
-		label = new JLabel(String.format("%.3f", Program.weights[3]));
-		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		label.setBorder(new EtchedBorder());
-		weightPanel.add(label);
-		
-		label = new JLabel(String.format("%.3f", Program.weights[3]));
-		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		label.setBorder(new EtchedBorder());
-		weightPanel.add(label);
-		
 		label = new JLabel(String.format("%.3f", Program.weights[4]));
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);
 		
 		label = new JLabel(String.format("%.3f", Program.weights[4]));
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		weightPanel.add(label);
+		
+		label = new JLabel(String.format("%.3f", Program.weights[5]));
+		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		label.setBorder(new EtchedBorder());
+		weightPanel.add(label);
+		
+		label = new JLabel(String.format("%.3f", Program.weights[5]));
 		label.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		label.setBorder(new EtchedBorder());
 		weightPanel.add(label);
